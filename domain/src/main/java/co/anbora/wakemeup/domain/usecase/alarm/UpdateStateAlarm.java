@@ -4,11 +4,11 @@ import co.anbora.wakemeup.domain.model.AlarmGeofence;
 import co.anbora.wakemeup.domain.repository.AlarmGeofenceRepository;
 import co.anbora.wakemeup.domain.usecase.UseCase;
 
-public class DisableAlarm extends UseCase<DisableAlarm.RequestValues, DisableAlarm.ResponseValues>{
+public class UpdateStateAlarm extends UseCase<UpdateStateAlarm.RequestValues, UpdateStateAlarm.ResponseValues>{
 
     private final AlarmGeofenceRepository repository;
 
-    public DisableAlarm(AlarmGeofenceRepository repository) {
+    public UpdateStateAlarm(AlarmGeofenceRepository repository) {
         this.repository = repository;
     }
 
@@ -16,7 +16,8 @@ public class DisableAlarm extends UseCase<DisableAlarm.RequestValues, DisableAla
     protected void executeUseCase(RequestValues requestValues) {
 
         AlarmGeofence alarm = requestValues.getAlarm();
-        this.repository.disableAlarm(alarm);
+        Boolean state = requestValues.getState();
+        this.repository.updateAlarm(alarm, state);
 
         getUseCaseCallback().onSuccess(new ResponseValues(alarm));
     }
@@ -24,13 +25,19 @@ public class DisableAlarm extends UseCase<DisableAlarm.RequestValues, DisableAla
     public static final class RequestValues implements UseCase.RequestValues {
 
         private final AlarmGeofence alarm;
+        private final Boolean state;
 
-        public RequestValues(AlarmGeofence alarm) {
+        public RequestValues(AlarmGeofence alarm, Boolean state) {
             this.alarm = alarm;
+            this.state = state;
         }
 
         public AlarmGeofence getAlarm() {
             return alarm;
+        }
+
+        public Boolean getState() {
+            return state;
         }
     }
 

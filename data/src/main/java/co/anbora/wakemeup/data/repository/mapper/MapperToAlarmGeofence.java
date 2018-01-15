@@ -21,6 +21,8 @@ public class MapperToAlarmGeofence implements TwoWaysMapper<AlarmGeofenceEntity,
                 .id(alarmGeofenceEntity.getAlarmId())
                 .name(alarmGeofenceEntity.getName())
                 .description(alarmGeofenceEntity.getDescription())
+                .latitude(alarmGeofenceEntity.getLatitude())
+                .longitude(alarmGeofenceEntity.getLongitude())
                 .state(alarmGeofenceEntity.getState())
                 .createdAt(alarmGeofenceEntity.getCreatedAt())
                 .deletedAt(alarmGeofenceEntity.getDeletedAt())
@@ -40,6 +42,8 @@ public class MapperToAlarmGeofence implements TwoWaysMapper<AlarmGeofenceEntity,
         alarm.setAlarmId(map.id());
         alarm.setName(map.name());
         alarm.setDescription(map.description());
+        alarm.setLatitude(map.latitude());
+        alarm.setLongitude(map.longitude());
         alarm.setState(map.state());
         alarm.setCreatedAt(map.createdAt());
         alarm.setDeletedAt(map.deletedAt());

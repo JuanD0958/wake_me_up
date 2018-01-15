@@ -1,0 +1,18 @@
+
+dsquid:UselessImportCheck"CRemove this unused import 'android.support.design.widget.Snackbar'.(†¿Æp
+usquid:S3923"[Remove this conditional structure or edit its code blocks so that they're not all the same.(¨†§⁄˛ˇˇˇˇ
+qsquid:S1450"WRemove the "fragment" field and declare it as a local variable in the relevant methods.(ÌâÛÙ˚ˇˇˇˇ
+õsquid:S1186"ÄAdd a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(≥ÃÏùˇˇˇˇˇ
+?squid:S00108")Either remove or fill this block of code.(ÊŒ‡†
+Dsquid:S00108")Either remove or fill this block of code.(Í±õ—¸ˇˇˇˇ
+qsquid:UselessImportCheck"ORemove this unused import 'android.support.design.widget.FloatingActionButton'.(Ñüπº
+Usquid:UselessImportCheck".Remove this unused import 'android.view.View'.(ÿΩ≠‰˛ˇˇˇˇ
+?squid:S00108")Either remove or fill this block of code.(ıúöˇ
+Dsquid:S00108")Either remove or fill this block of code.(’Û≥˜˙ˇˇˇˇ
+a$squid:AssignmentInSubExpressionCheck".Extract the assignment out of this expression.(Ó—ñé˘ˇˇˇˇ
+_squid:UselessImportCheck">Remove this unused import 'android.support.v7.widget.Toolbar'.(‡Ω£
+`squid:UselessImportCheck"?Remove this unused import 'android.support.annotation.NonNull'.(º≈ﬂ
+ksquid:S1450"VRemove the "binding" field and declare it as a local variable in the relevant methods.(∂Å√ 
+ñsquid:S1186"ÄAdd a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ÛÍÊÔ
+?squid:S00108")Either remove or fill this block of code.(Û¥Æù
+hsquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(˘†ÆÕ˙ˇˇˇˇ

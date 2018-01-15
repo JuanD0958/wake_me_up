@@ -1,25 +1,65 @@
 package co.anbora.wakemeup.ui.alarms;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import co.anbora.wakemeup.R;
+import co.anbora.wakemeup.service.Constants;
+
+import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.adapter.alarms.AlarmsAdapter;
 import co.anbora.wakemeup.databinding.FragmentAlarmsBinding;
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
+import co.anbora.wakemeup.service.GeofenceErrorMessages;
+import co.anbora.wakemeup.service.GeofenceTransitionsIntentService;
+import co.anbora.wakemeup.ui.addalarm.AddAlarmDialog;
+import co.anbora.wakemeup.ui.addalarm.AddAlarmPresenter;
+import co.anbora.wakemeup.util.Utilities;
 
-public class AlarmsFragment extends Fragment {
+public class AlarmsFragment extends Fragment implements AlarmsContract.View, OnCompleteListener<Void> {
 
+    private static final String TAG = AlarmsFragment.class.getSimpleName();
     private FragmentAlarmsBinding binding;
     private AlarmsAdapter adapter;
+    private AlarmsContract.Presenter presenter;
+
+    /**
+     * Provides access to the Geofencing API.
+     */
+    private GeofencingClient mGeofencingClient;
+
+    /**
+     * The list of geofences used in this sample.
+     */
+    private ArrayList<Geofence> mGeofenceList;
+
+    /**
+     * Used when requesting to add or remove geofences.
+     */
+    private PendingIntent mGeofencePendingIntent;
 
     public AlarmsFragment() {
     }
@@ -34,11 +74,29 @@ public class AlarmsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         binding = FragmentAlarmsBinding.inflate(inflater, container, false);
-        adapter = new AlarmsAdapter(getActivity(), alarms());
-        binding.rvList.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.fabAddNewPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAddAlarm();
+            }
+        });
+        adapter = new AlarmsAdapter(new ArrayList<AlarmGeofence>(), presenter);
+        binding.rvList.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.rvList.setItemAnimator(new DefaultItemAnimator());
         binding.rvList.setAdapter(adapter);
+
+        // Empty list for storing geofences.
+        mGeofenceList = new ArrayList<>();
+
+        mGeofencingClient = LocationServices.getGeofencingClient(getActivity());
+
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.presenter.loadAlarms();
     }
 
     @Override
@@ -51,110 +109,148 @@ public class AlarmsFragment extends Fragment {
         super.onDetach();
     }
 
-    public List<AlarmGeofence> alarms(){
-        ArrayList<AlarmGeofence> list = new ArrayList<>();
-        list.add(new AlarmGeofence() {
-            @Override
-            public Long internalId() {
-                return 1L;
-            }
+    @Override
+    public void showAlarms(List<AlarmGeofence> alarms) {
+        if (alarms != null) {
+            this.adapter.setList(alarms);
+            populateGeofenceList(alarms);
+            addGeofences();
+        }
+    }
 
-            @Override
-            public Long remoteId() {
-                return 2L;
-            }
+    /**
+     * Gets a PendingIntent to send with the request to add or remove Geofences. Location Services
+     * issues the Intent inside this PendingIntent whenever a geofence transition occurs for the
+     * current list of geofences.
+     *
+     * @return A PendingIntent for the IntentService that handles geofence transitions.
+     */
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (mGeofencePendingIntent != null) {
+            return mGeofencePendingIntent;
+        }
+        Intent intent = new Intent(getActivity(), GeofenceTransitionsIntentService.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // addGeofences() and removeGeofences().
+        return PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 
-            @Override
-            public String id() {
-                return "12345";
-            }
+    @Override
+    public void showAddAlarm() {
 
-            @Override
-            public String name() {
-                return "poc";
-            }
+        FragmentManager fm = getFragmentManager();
+        AddAlarmDialog dialogFragment = new AddAlarmDialog ();
+        dialogFragment.show(fm, null);
+        new AddAlarmPresenter(Injection.provideUseCaseHandler(),
+                Injection.provideAddAlarm(),
+                dialogFragment,this);
+    }
 
-            @Override
-            public String description() {
-                return "poc";
-            }
+    @Override
+    public void showNoAlarms() {
 
-            @Override
-            public Boolean state() {
-                return true;
-            }
+    }
 
-            @Override
-            public Long createdAt() {
-                return 1L;
-            }
+    @Override
+    public void showAlarms() {
 
-            @Override
-            public Long updatedAt() {
-                return 1L;
-            }
+        this.presenter.loadAlarms();
+    }
 
-            @Override
-            public Long deletedAt() {
-                return 1L;
-            }
+    /**
+     * Adds geofences. This method should be called after the user has granted the location
+     * permission.
+     */
+    @SuppressWarnings("MissingPermission")
+    private void addGeofences() {
+        if (!Utilities.checkPermissions(getActivity())) {
+            showSnackbar(getString(R.string.insufficient_permissions));
+            return;
+        }
 
-            @Override
-            public Boolean needsSync() {
-                return false;
-            }
-        });
-        list.add(new AlarmGeofence() {
-            @Override
-            public Long internalId() {
-                return 1L;
-            }
+        mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                .addOnCompleteListener(this);
+    }
 
-            @Override
-            public Long remoteId() {
-                return 2L;
-            }
+    /**
+     * Shows a {@link Snackbar} using {@code text}.
+     *
+     * @param text The Snackbar text.
+     */
+    private void showSnackbar(final String text) {
+        View container = getActivity().findViewById(android.R.id.content);
+        if (container != null) {
+            Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
+        }
+    }
 
-            @Override
-            public String id() {
-                return "12345";
-            }
+    /**
+     * Builds and returns a GeofencingRequest. Specifies the list of geofences to be monitored.
+     * Also specifies how the geofence notifications are initially triggered.
+     */
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
 
-            @Override
-            public String name() {
-                return "poc";
-            }
+        // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
+        // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
+        // is already inside that geofence.
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
 
-            @Override
-            public String description() {
-                return "poc";
-            }
+        // Add the geofences to be monitored by geofencing service.
+        builder.addGeofences(mGeofenceList);
 
-            @Override
-            public Boolean state() {
-                return true;
-            }
+        // Return a GeofencingRequest.
+        return builder.build();
+    }
 
-            @Override
-            public Long createdAt() {
-                return 1L;
-            }
+    private void populateGeofenceList(List<AlarmGeofence> alarms) {
+        mGeofenceList.clear();
+        for (AlarmGeofence alarm: alarms) {
 
-            @Override
-            public Long updatedAt() {
-                return 1L;
-            }
+            if (alarm.state()) {
+                mGeofenceList.add(new Geofence.Builder()
+                        // Set the request ID of the geofence. This is a string to identify this
+                        // geofence.
+                        .setRequestId(alarm.id())
 
-            @Override
-            public Long deletedAt() {
-                return 1L;
-            }
+                        // Set the circular region of this geofence.
+                        .setCircularRegion(
+                                alarm.latitude(),
+                                alarm.longitude(),
+                                Constants.GEOFENCE_RADIUS_IN_METERS
+                        )
 
-            @Override
-            public Boolean needsSync() {
-                return false;
+                        // Set the expiration duration of the geofence. This geofence gets automatically
+                        // removed after this period of time.
+                        .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+
+                        // Set the transition types of interest. Alerts are only generated for these
+                        // transition. We track entry and exit transitions in this sample.
+                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                                Geofence.GEOFENCE_TRANSITION_EXIT)
+
+                        // Create the geofence.
+                        .build());
             }
-        });
-        return list;
+        }
+    }
+
+    @Override
+    public void setPresenter(AlarmsContract.Presenter presenter) {
+        this.presenter = presenter;
+    }
+
+    @Override
+    public void onComplete(@NonNull Task<Void> task) {
+
+        if (task.isSuccessful()) {
+
+            Toast.makeText(getActivity(), getString(R.string.task_ok), Toast.LENGTH_SHORT).show();
+        } else {
+            // Get the status code for the error and log it using a user-friendly message.
+            String errorMessage = GeofenceErrorMessages.getErrorString(getActivity(), task.getException());
+            Log.w(TAG, errorMessage);
+        }
     }
 }

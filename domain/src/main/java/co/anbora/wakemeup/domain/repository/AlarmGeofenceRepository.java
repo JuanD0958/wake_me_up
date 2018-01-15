@@ -22,6 +22,6 @@ public interface AlarmGeofenceRepository {
 
     void deleteAlarm(AlarmGeofence alarm);
 
-    void disableAlarm(AlarmGeofence alarm);
+    void updateAlarm(AlarmGeofence alarm, Boolean state);
 
 }

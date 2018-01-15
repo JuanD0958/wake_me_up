@@ -27,11 +27,7 @@ public class AlarmGeofenceRepositoryImpl implements AlarmGeofenceRepository {
                 .stream()
                 .map(mapperToAlarmGeofence).collect(Collectors.<AlarmGeofence>toList());
 
-        if (alarms.isEmpty()) {
-            callback.onDataNotAvailable();
-        } else {
-            callback.onAlarmsLoaded(alarms);
-        }
+        callback.onAlarmsLoaded(alarms);
     }
 
     @Override
@@ -45,10 +41,10 @@ public class AlarmGeofenceRepositoryImpl implements AlarmGeofenceRepository {
     }
 
     @Override
-    public void disableAlarm(AlarmGeofence alarm) {
+    public void updateAlarm(AlarmGeofence alarm, Boolean state) {
 
         AlarmGeofenceEntity alarmEntity = mapperToAlarmGeofence.inverseMap(alarm);
-        alarmEntity.setState(false);
+        alarmEntity.setState(state);
         this.alarmDao.insert(alarmEntity);
     }
 }

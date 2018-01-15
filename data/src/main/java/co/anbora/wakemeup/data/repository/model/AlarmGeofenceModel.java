@@ -30,6 +30,12 @@ public abstract class AlarmGeofenceModel implements AlarmGeofence {
     public abstract String description();
 
     @NonNull
+    public abstract Double latitude();
+
+    @NonNull
+    public abstract Double longitude();
+
+    @NonNull
     public abstract Boolean state();
 
     @NonNull
@@ -56,6 +62,8 @@ public abstract class AlarmGeofenceModel implements AlarmGeofence {
                 .id(alarm.id())
                 .name(alarm.name())
                 .description(alarm.description())
+                .latitude(alarm.latitude())
+                .longitude(alarm.longitude())
                 .state(alarm.state())
                 .createdAt(alarm.createdAt())
                 .updatedAt(alarm.updatedAt())
@@ -92,6 +100,12 @@ public abstract class AlarmGeofenceModel implements AlarmGeofence {
 
         @NonNull
         public abstract Builder description(@NonNull String state);
+
+        @NonNull
+        public abstract Builder latitude(@NonNull Double latitude);
+
+        @NonNull
+        public abstract Builder longitude(@NonNull Double longitude);
 
         @NonNull
         public abstract Builder state(@NonNull Boolean state);

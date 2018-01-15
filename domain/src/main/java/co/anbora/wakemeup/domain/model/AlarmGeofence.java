@@ -12,6 +12,10 @@ public interface AlarmGeofence {
 
     String description();
 
+    Double latitude();
+
+    Double longitude();
+
     Boolean state();
 
     Long createdAt();

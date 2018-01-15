@@ -26,11 +26,11 @@ public class SdkImpl implements Repository {
 
     @Override
     public void deleteAlarm(AlarmGeofence alarm) {
-        this.deleteAlarm(alarm);
+        this.repository.deleteAlarm(alarm);
     }
 
     @Override
-    public void disableAlarm(AlarmGeofence alarm) {
-        this.disableAlarm(alarm);
+    public void updateAlarm(AlarmGeofence alarm, Boolean state) {
+        this.repository.updateAlarm(alarm, state);
     }
 }

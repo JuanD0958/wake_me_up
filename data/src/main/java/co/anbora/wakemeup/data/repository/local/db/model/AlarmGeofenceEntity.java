@@ -20,6 +20,8 @@ public class AlarmGeofenceEntity {
     public static final String COLUMN_ALARM_ID = "id_alarm";
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_LATITUDE = "latitude";
+    public static final String COLUMN_LONGITUDE = "longitude";
     public static final String COLUMN_STATE = "state";
     public static final String COLUMN_CREATE_AT = "create_at";
     public static final String COLUMN_DELETE_AT = "delete_at";
@@ -41,6 +43,12 @@ public class AlarmGeofenceEntity {
 
     @ColumnInfo(name = COLUMN_DESCRIPTION)
     private String description;
+
+    @ColumnInfo(name = COLUMN_LATITUDE)
+    private Double latitude;
+
+    @ColumnInfo(name = COLUMN_LONGITUDE)
+    private Double longitude;
 
     @ColumnInfo(name = COLUMN_STATE)
     private Boolean state;
@@ -135,5 +143,21 @@ public class AlarmGeofenceEntity {
 
     public void setNeedSync(Boolean needSync) {
         this.needSync = needSync;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }

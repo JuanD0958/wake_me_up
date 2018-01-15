@@ -12,7 +12,7 @@ import co.anbora.wakemeup.data.repository.local.db.model.AlarmGeofenceEntity;
 /**
  * Created by dalgarins.
  */
-@Database(entities = {AlarmGeofenceEntity.class}, version = 1)
+@Database(entities = {AlarmGeofenceEntity.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     static final String DATABASE_NAME = "alarm-geofence-db";

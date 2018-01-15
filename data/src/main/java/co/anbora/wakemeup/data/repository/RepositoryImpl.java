@@ -32,8 +32,8 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public void disableAlarm(AlarmGeofence alarm) {
+    public void updateAlarm(AlarmGeofence alarm, Boolean state) {
 
-        this.alarmRepository.disableAlarm(alarm);
+        this.alarmRepository.updateAlarm(alarm, state);
     }
 }
