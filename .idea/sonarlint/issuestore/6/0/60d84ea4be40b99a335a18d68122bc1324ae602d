@@ -1,0 +1,5 @@
+
+tsquid:S1450"XRemove the "googleMap" field and declare it as a local variable in the relevant methods.(ä‘òÖ8Šéä·,
+ssquid:S1450"WRemove the "geocoder" field and declare it as a local variable in the relevant methods.(—…§¡8‰»Ğº,
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(‘Ùúí8•Ô·,
+Dsquid:S1148"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8ÏÉÑº,

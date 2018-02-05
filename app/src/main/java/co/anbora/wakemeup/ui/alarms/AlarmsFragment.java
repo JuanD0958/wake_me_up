@@ -1,13 +1,14 @@
 package co.anbora.wakemeup.ui.alarms;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -20,6 +21,12 @@ import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -27,19 +34,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.anbora.wakemeup.R;
-import co.anbora.wakemeup.service.Constants;
-
-import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.adapter.alarms.AlarmsAdapter;
 import co.anbora.wakemeup.databinding.FragmentAlarmsBinding;
+import co.anbora.wakemeup.device.location.Callback;
+import co.anbora.wakemeup.device.location.LocationComponentListenerImpl;
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
+import co.anbora.wakemeup.service.Constants;
 import co.anbora.wakemeup.service.GeofenceErrorMessages;
 import co.anbora.wakemeup.service.GeofenceTransitionsIntentService;
-import co.anbora.wakemeup.ui.addalarm.AddAlarmDialog;
-import co.anbora.wakemeup.ui.addalarm.AddAlarmPresenter;
 import co.anbora.wakemeup.util.Utilities;
+import ru.alexbykov.nopermission.PermissionHelper;
 
-public class AlarmsFragment extends Fragment implements AlarmsContract.View, OnCompleteListener<Void> {
+public class AlarmsFragment extends Fragment implements AlarmsContract.View,
+        OnCompleteListener<Void>, OnMapReadyCallback {
 
     private static final String TAG = AlarmsFragment.class.getSimpleName();
     private FragmentAlarmsBinding binding;
@@ -60,6 +67,11 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View, OnC
      * Used when requesting to add or remove geofences.
      */
     private PendingIntent mGeofencePendingIntent;
+    private SupportMapFragment mMapFragment;
+
+    private LocationComponentListenerImpl observerLocation;
+
+    private PermissionHelper permissionHelper;
 
     public AlarmsFragment() {
     }
@@ -73,6 +85,25 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View, OnC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        setupUI(inflater, container);
+        setupUX();
+        setupPermissionHelper();
+        askLocationPermission();
+
+        return binding.getRoot();
+    }
+
+    private void setupUX() {
+        // Empty list for storing geofences.
+        mGeofenceList = new ArrayList<>();
+
+        mGeofencingClient = LocationServices.getGeofencingClient(getActivity());
+
+        mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mMapFragment.getMapAsync(this);
+    }
+
+    private void setupUI(LayoutInflater inflater, ViewGroup container) {
         binding = FragmentAlarmsBinding.inflate(inflater, container, false);
         binding.fabAddNewPost.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,19 +115,20 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View, OnC
         binding.rvList.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.rvList.setItemAnimator(new DefaultItemAnimator());
         binding.rvList.setAdapter(adapter);
-
-        // Empty list for storing geofences.
-        mGeofenceList = new ArrayList<>();
-
-        mGeofencingClient = LocationServices.getGeofencingClient(getActivity());
-
-        return binding.getRoot();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         this.presenter.loadAlarms();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!Utilities.checkPermissions(getActivity())) {
+            Utilities.requestPermissions(TAG, getActivity(), R.string.permission_rationale, binding.contentLayout.getRootView());
+        }
     }
 
     @Override
@@ -139,12 +171,10 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View, OnC
     @Override
     public void showAddAlarm() {
 
-        FragmentManager fm = getFragmentManager();
-        AddAlarmDialog dialogFragment = new AddAlarmDialog ();
-        dialogFragment.show(fm, null);
-        new AddAlarmPresenter(Injection.provideUseCaseHandler(),
-                Injection.provideAddAlarm(),
-                dialogFragment,this);
+        //Intent intent = new Intent(getActivity(), AddAlarmActivity.class);
+        //startActivity(intent);
+
+        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
     }
 
     @Override
@@ -169,8 +199,10 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View, OnC
             return;
         }
 
-        mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
-                .addOnCompleteListener(this);
+        if (!mGeofenceList.isEmpty()) {
+            mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                    .addOnCompleteListener(this);
+        }
     }
 
     /**
@@ -252,5 +284,58 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View, OnC
             String errorMessage = GeofenceErrorMessages.getErrorString(getActivity(), task.getException());
             Log.w(TAG, errorMessage);
         }
+    }
+
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+
+        googleMap.getUiSettings().setMapToolbarEnabled(false);
+
+        observerLocation = new LocationComponentListenerImpl(getActivity(), getLifecycle(), new Callback() {
+            @Override
+            public void execute(Location location) {
+                googleMap.clear();
+                LatLng currentLocation = new LatLng(location.getLatitude()
+                        , location.getLongitude());
+                googleMap.addMarker(new MarkerOptions().position(currentLocation)
+                        .title("Mi ubicacion"));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
+            }
+        });
+    }
+
+    private void setupPermissionHelper() {
+        permissionHelper = new PermissionHelper(this);
+    }
+
+    private void askLocationPermission() {
+        permissionHelper.check(Manifest.permission.ACCESS_FINE_LOCATION)
+                .withDialogBeforeRun(R.string.dialog_before_run_title,
+                        R.string.dialog_before_run_message, R.string.dialog_positive_button)
+                .setDialogPositiveButtonColor(android.R.color.holo_orange_dark)
+                .onSuccess(this::onSuccess)
+                .onDenied(this::onDenied)
+                .onNeverAskAgain(this::onNeverAskAgain)
+                .run();
+    }
+
+
+    private void onSuccess() {
+        Log.d(TAG, "LocationSuccess");
+    }
+
+
+    private void onNeverAskAgain() {
+        Log.d(TAG, "LocationNeverAskAgain");
+        permissionHelper.startApplicationSettingsActivity();
+    }
+
+    private void onDenied() {
+        Log.d(TAG, "LocationDenied");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        permissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

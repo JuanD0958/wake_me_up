@@ -1,0 +1,8 @@
+
+Fsquid:S1068"+Remove this unused "context" private field.(êİç8½Õî•,
+Lsquid:S1068"+Remove this unused "enabled" private field.(…èğ†ÿÿÿÿÿ8ü’¶ï•,
+=squid:S1170"!Make this final field static too.(éÄÄœ8ªóûñ•,
+Msquid:S1068",Remove this unused "callback" private field.(â´§ÿÿÿÿÿ8“Õî•,
+nsquid:S00116"QRename this field "METERS" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(éÄÄœ8ªóûñ•,
+Bsquid:S1170"!Make this final field static too.(ª¿ñşÿÿÿÿ8ªóûñ•,
+tsquid:S00116"RRename this field "SECONDS" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ª¿ñşÿÿÿÿ8ªóûñ•,

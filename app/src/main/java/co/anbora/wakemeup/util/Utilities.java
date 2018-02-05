@@ -27,7 +27,7 @@ public class Utilities {
         return permissionState == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static void requestPermissions(String TAG, final Activity activity, final int mainTextStringId) {
+    public static void requestPermissions(String TAG, final Activity activity, final int mainTextStringId, View view) {
         boolean shouldProvideRationale =
                 ActivityCompat.shouldShowRequestPermissionRationale(activity,
                         Manifest.permission.ACCESS_FINE_LOCATION);
@@ -45,7 +45,7 @@ public class Utilities {
                                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                     REQUEST_PERMISSIONS_REQUEST_CODE);
                         }
-                    }, activity);
+                    }, activity, view);
         } else {
             Log.i(TAG, "Requesting permission");
             // Request permission. It's possible this can be auto answered if device policy
@@ -65,9 +65,9 @@ public class Utilities {
      * @param listener         The listener associated with the Snackbar action.
      */
     public static void showSnackbar(final int mainTextStringId, final int actionStringId,
-                              View.OnClickListener listener, Activity activity) {
+                              View.OnClickListener listener, Activity activity, View view) {
         Snackbar.make(
-                activity.findViewById(android.R.id.content),
+                view,
                 activity.getString(mainTextStringId),
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(activity.getString(actionStringId), listener).show();

@@ -1,0 +1,16 @@
+
+lsquid:UselessImportCheck"DRemove this unused import 'android.support.v4.app.FragmentActivity'.(¸­¯D8ì’üû“,
+zsquid:UselessImportCheck"LRemove this unused import 'com.google.android.gms.maps.model.MarkerOptions'.(²ªÅüÿÿÿÿ8—ñ¸û“,
+zsquid:UselessImportCheck"LRemove this unused import 'com.google.android.gms.maps.CameraUpdateFactory'.(ÁËòøúÿÿÿÿ8—ñ¸û“,
+ksquid:UselessImportCheck"BRemove this unused import 'android.support.v4.view.GravityCompat'.(§‘¿Ú8ûÜ ş“,
+Lsquid:S1068"+Remove this unused "binding" private field.(Ï™¤®øÿÿÿÿ8ªŞÚş“,
+ysquid:UselessImportCheck"KRemove this unused import 'com.google.android.gms.maps.SupportMapFragment'.(ğ¤Çÿÿÿÿÿ8—ñ¸û“,
+tsquid:UselessImportCheck"KRemove this unused import 'com.google.android.gms.maps.OnMapReadyCallback'.(àæ¤«8‘§¸û“,
+wsquid:S1450"VRemove the "binding" field and declare it as a local variable in the relevant methods.(Ï™¤®øÿÿÿÿ8ûÜ ş“,
+gsquid:UselessImportCheck"?Remove this unused import 'android.support.annotation.NonNull'.(¼Åß8ûÜ ş“,
+wsquid:UselessImportCheck"IRemove this unused import 'android.support.design.widget.NavigationView'.(×‚’Şşÿÿÿÿ8‰¿ ş“,
+[squid:UselessImportCheck"2Remove this unused import 'android.view.MenuItem'.(Ğ¬Ó‘8ûÜ ş“,
+wsquid:UselessImportCheck"IRemove this unused import 'android.support.v7.app.ActionBarDrawerToggle'.(Å¡à©ÿÿÿÿÿ8ØŸ³ş“,
+ssquid:UselessImportCheck"ERemove this unused import 'com.google.android.gms.maps.model.LatLng'.(Ï˜Éıüÿÿÿÿ8—ñ¸û“,
+psquid:UselessImportCheck"BRemove this unused import 'com.google.android.gms.maps.GoogleMap'.(ƒ¼’ùÿÿÿÿ8„÷û“,
+csquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(£ üÜ

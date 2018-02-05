@@ -1,18 +1,11 @@
 
-dsquid:UselessImportCheck"CRemove this unused import 'android.support.design.widget.Snackbar'.( À®p
-usquid:S3923"[Remove this conditional structure or edit its code blocks so that they're not all the same.(¬ ¤Úşÿÿÿÿ
-qsquid:S1450"WRemove the "fragment" field and declare it as a local variable in the relevant methods.(í‰óôûÿÿÿÿ
-›squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(³Ììÿÿÿÿÿ
-?squid:S00108")Either remove or fill this block of code.(æÎà 
-Dsquid:S00108")Either remove or fill this block of code.(ê±›Ñüÿÿÿÿ
-qsquid:UselessImportCheck"ORemove this unused import 'android.support.design.widget.FloatingActionButton'.(„Ÿ¹¼
-Usquid:UselessImportCheck".Remove this unused import 'android.view.View'.(Ø½­äşÿÿÿÿ
-?squid:S00108")Either remove or fill this block of code.(õœšÿ
-Dsquid:S00108")Either remove or fill this block of code.(Õó³÷úÿÿÿÿ
-a$squid:AssignmentInSubExpressionCheck".Extract the assignment out of this expression.(îÑ–ùÿÿÿÿ
-_squid:UselessImportCheck">Remove this unused import 'android.support.v7.widget.Toolbar'.(à½£
-`squid:UselessImportCheck"?Remove this unused import 'android.support.annotation.NonNull'.(¼Åß
-ksquid:S1450"VRemove the "binding" field and declare it as a local variable in the relevant methods.(¶ÃÊ
-–squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(óêæï
 ?squid:S00108")Either remove or fill this block of code.(ó´®
+usquid:S3923"[Remove this conditional structure or edit its code blocks so that they're not all the same.(¬ ¤Úşÿÿÿÿ
+Dsquid:S00108")Either remove or fill this block of code.(ê±›Ñüÿÿÿÿ
 hsquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(ù ®Íúÿÿÿÿ
+a$squid:AssignmentInSubExpressionCheck".Extract the assignment out of this expression.(îÑ–ùÿÿÿÿ
+?squid:S00108")Either remove or fill this block of code.(õœšÿ
+?squid:S00108")Either remove or fill this block of code.(æÎà 
+Dsquid:S00108")Either remove or fill this block of code.(Õó³÷úÿÿÿÿ
+xsquid:UselessImportCheck"JRemove this unused import 'co.anbora.wakemeup.domain.model.AlarmGeofence'.(•¡ààıÿÿÿÿ8¬˜´ø“,
+qsquid:S1450"WRemove the "fragment" field and declare it as a local variable in the relevant methods.(í‰óôûÿÿÿÿ

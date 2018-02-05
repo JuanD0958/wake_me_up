@@ -23,6 +23,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     dataBinding.enabled = true
 }
 
@@ -39,8 +44,14 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:11.8.0'
     implementation 'com.google.android.gms:play-services-location:11.8.0'
 
+    //permission
+    compile 'ru.alexbykov:nopermission:1.1.2'
+
     //data
     compile project(path: ':data')
+
+    //device
+    compile project(path: ':device')
 
     //domain
     compile project(path: ':domain')

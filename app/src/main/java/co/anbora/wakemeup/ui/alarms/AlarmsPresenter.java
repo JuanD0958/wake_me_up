@@ -7,7 +7,6 @@ import co.anbora.wakemeup.domain.usecase.alarm.AddAlarm;
 import co.anbora.wakemeup.domain.usecase.alarm.DeleteAlarm;
 import co.anbora.wakemeup.domain.usecase.alarm.GetAlarms;
 import co.anbora.wakemeup.domain.usecase.alarm.UpdateStateAlarm;
-import co.anbora.wakemeup.ui.MainContract;
 
 /**
  * Created by dalgarins on 01/13/18.
@@ -20,7 +19,6 @@ public class AlarmsPresenter implements AlarmsContract.Presenter {
     private final DeleteAlarm deleteAlarm;
     private final GetAlarms getAlarms;
     private final UpdateStateAlarm updateStateAlarm;
-    private final MainContract.View mapView;
 
     private final UseCaseHandler useCaseHandler;
 
@@ -29,8 +27,7 @@ public class AlarmsPresenter implements AlarmsContract.Presenter {
                            AddAlarm addAlarm,
                            DeleteAlarm deleteAlarm,
                            GetAlarms getAlarms,
-                           UpdateStateAlarm updateStateAlarm,
-                           MainContract.View mapView) {
+                           UpdateStateAlarm updateStateAlarm) {
 
         this.useCaseHandler = useCaseHandler;
         this.view = view;
@@ -38,7 +35,6 @@ public class AlarmsPresenter implements AlarmsContract.Presenter {
         this.deleteAlarm = deleteAlarm;
         this.getAlarms = getAlarms;
         this.updateStateAlarm = updateStateAlarm;
-        this.mapView = mapView;
 
         this.view.setPresenter(this);
     }
@@ -105,9 +101,7 @@ public class AlarmsPresenter implements AlarmsContract.Presenter {
 
     @Override
     public void showAlarm(AlarmGeofence alarm) {
-        if (mapView !=  null) {
-            this.mapView.showAlarmInMap(alarm);
-        }
+
     }
 
     @Override

@@ -46,5 +46,9 @@
     <string name="cancel">Cancelar</string>
 
     <string name="task_ok">Se agregaron las alarmas</string>
+    <string name="title_activity_add_alarm">Add Alarm</string>
+    <string name="dialog_before_run_title">titulo permiso</string>
+    <string name="dialog_before_run_message">mensaje permiso</string>
+    <string name="dialog_positive_button">ok</string>
 
 </resources>
