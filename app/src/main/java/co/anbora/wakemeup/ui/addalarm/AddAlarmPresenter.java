@@ -16,16 +16,12 @@ public class AddAlarmPresenter implements AddAlarmContract.Presenter {
     private final AddAlarm addAlarm;
 
     private final UseCaseHandler useCaseHandler;
-    private final AlarmsContract.View viewList;
 
-    public AddAlarmPresenter(UseCaseHandler useCaseHandler, AddAlarm addAlarm, AddAlarmContract.View view,
-                             AlarmsContract.View viewList) {
+    public AddAlarmPresenter(UseCaseHandler useCaseHandler, AddAlarm addAlarm, AddAlarmContract.View view) {
 
         this.useCaseHandler = useCaseHandler;
         this.addAlarm = addAlarm;
         this.view = view;
-
-        this.viewList = viewList;
 
         this.view.setPresenter(this);
     }
@@ -41,7 +37,9 @@ public class AddAlarmPresenter implements AddAlarmContract.Presenter {
                 new UseCase.UseCaseCallback<AddAlarm.ResponseValues>() {
             @Override
             public void onSuccess(AddAlarm.ResponseValues response) {
-                viewList.showAlarms();
+                if (view != null) {
+                    view.close();
+                }
             }
 
             @Override

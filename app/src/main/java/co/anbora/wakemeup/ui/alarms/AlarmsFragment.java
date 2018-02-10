@@ -42,6 +42,7 @@ import co.anbora.wakemeup.domain.model.AlarmGeofence;
 import co.anbora.wakemeup.service.Constants;
 import co.anbora.wakemeup.service.GeofenceErrorMessages;
 import co.anbora.wakemeup.service.GeofenceTransitionsIntentService;
+import co.anbora.wakemeup.ui.addalarm.AddAlarmActivity;
 import co.anbora.wakemeup.util.Utilities;
 import ru.alexbykov.nopermission.PermissionHelper;
 
@@ -171,10 +172,8 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
     @Override
     public void showAddAlarm() {
 
-        //Intent intent = new Intent(getActivity(), AddAlarmActivity.class);
-        //startActivity(intent);
-
-        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        Intent intent = new Intent(getActivity(), AddAlarmActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -302,6 +301,8 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
             }
         });
+
+        getLifecycle().addObserver(observerLocation);
     }
 
     private void setupPermissionHelper() {

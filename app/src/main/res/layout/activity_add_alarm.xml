@@ -12,14 +12,14 @@
             android:id="@+id/main_coordinator"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="co.anbora.mastertaxi.client.ui.activities.MainActivity">
+            tools:context=".ui.addalarm.AddAlarmActivity">
 
             <FrameLayout
                 android:id="@+id/content_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                tools:context=".MainActivity"
+                tools:context=".ui.addalarm.AddAlarmActivity"
                 tools:showIn="@layout/app_bar_main">
 
             </FrameLayout>

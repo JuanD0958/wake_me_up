@@ -56,7 +56,6 @@ public class LocationComponentListenerImpl implements LifecycleObserver {
         this.callback = callback;
 
         this.setUpLocationManager(context, callback);
-        this.lifecycle.addObserver(this);
 
         setupGPS();
     }

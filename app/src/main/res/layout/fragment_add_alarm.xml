@@ -26,6 +26,22 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            map:layout_anchor="@+id/add_alarm_map"
+            map:layout_anchorGravity="bottom|center">
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/ok_add_alarm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/add_alarm"
+                android:backgroundTint="@color/colorPrimary"/>
+
+        </LinearLayout>
+
     </android.support.design.widget.CoordinatorLayout>
 
 </layout>
