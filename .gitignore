@@ -183,5 +183,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+### Sonar ###
+#Sonar generated dir
+.idea/sonarlint/*/*.*
 
 # End of https://www.gitignore.io/api/macos,android,androidstudio
