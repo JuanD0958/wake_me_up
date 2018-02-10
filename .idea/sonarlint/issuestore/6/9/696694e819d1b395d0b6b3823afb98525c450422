@@ -1,9 +1,9 @@
 
-Dsquid:S1185"(Remove this method to simply inherit it.(ˆÏ€¶8¾ˆÈð•,
-gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Æ¢öÛ8¾ˆÈð•,
-|squid:S1450"[Remove the "mMapFragment" field and declare it as a local variable in the relevant methods.(í­ÕÖøÿÿÿÿ8‡²çï•,
-=squid:S1185"(Remove this method to simply inherit it.(ßìê¯
-{squid:S1450"_Remove the "observerLocation" field and declare it as a local variable in the relevant methods.(ë‹À¼8¦¬Òð•,
-Isquid:S1185"(Remove this method to simply inherit it.(Ç™²“øÿÿÿÿ8¾ˆÈð•,
-squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ÅÚå8¾ˆÈð•,
-–squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(³…·
+|squid:S1450"[Remove the "mMapFragment" field and declare it as a local variable in the relevant methods.(í­ÕÖøÿÿÿÿ8ŠÕÄë—,
+{squid:S1450"_Remove the "observerLocation" field and declare it as a local variable in the relevant methods.(ë‹À¼8ŠÕÄë—,
+Dsquid:S1604"(Make this anonymous inner class a lambda(ƒ•ðÜ8ŠÕÄë—,
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ÅÚå8ŠÕÄë—,
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(³…·8ŠÕÄë—,
+Dsquid:S1185"(Remove this method to simply inherit it.(ßìê¯8ŠÕÄë—,
+Dsquid:S1185"(Remove this method to simply inherit it.(ˆÏ€¶8ŠÕÄë—,
+Isquid:S1185"(Remove this method to simply inherit it.(Ç™²“øÿÿÿÿ8ŠÕÄë—,

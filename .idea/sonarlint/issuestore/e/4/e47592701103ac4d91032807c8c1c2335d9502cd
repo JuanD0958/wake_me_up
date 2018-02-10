@@ -1,11 +1,18 @@
 
-?squid:S00108")Either remove or fill this block of code.(ó´®
-usquid:S3923"[Remove this conditional structure or edit its code blocks so that they're not all the same.(¬ ¤Úşÿÿÿÿ
-Dsquid:S00108")Either remove or fill this block of code.(ê±›Ñüÿÿÿÿ
-hsquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(ù ®Íúÿÿÿÿ
-a$squid:AssignmentInSubExpressionCheck".Extract the assignment out of this expression.(îÑ–ùÿÿÿÿ
-?squid:S00108")Either remove or fill this block of code.(õœšÿ
-?squid:S00108")Either remove or fill this block of code.(æÎà 
-Dsquid:S00108")Either remove or fill this block of code.(Õó³÷úÿÿÿÿ
+lsquid:UselessImportCheck">Remove this unused import 'co.anbora.wakemeup.util.Utilities'.(Ãû¯÷ùÿÿÿÿ8ä©²–,
+_squid:UselessImportCheck"6Remove this unused import 'android.provider.Settings'.(Š¯„8á‹²–,
+gsquid:UselessImportCheck"?Remove this unused import 'android.support.annotation.NonNull'.(¼Åß8á‹²–,
+Ksquid:S00108")Either remove or fill this block of code.(ê±›Ñüÿÿÿÿ8è®–,
+lsquid:UselessImportCheck">Remove this unused import 'android.content.pm.PackageManager'.(€®¥õÿÿÿÿÿ8á‹²–,
+Fsquid:S00108")Either remove or fill this block of code.(æÎà 8è®–,
+[squid:UselessImportCheck"3Remove this unused import 'android.content.Intent'.(³ğ‹G8á‹²–,
 xsquid:UselessImportCheck"JRemove this unused import 'co.anbora.wakemeup.domain.model.AlarmGeofence'.(•¡ààıÿÿÿÿ8¬˜´ø“,
-qsquid:S1450"WRemove the "fragment" field and declare it as a local variable in the relevant methods.(í‰óôûÿÿÿÿ
+[squid:UselessImportCheck"-Remove this unused import 'android.util.Log'.(Ô¦Ø²øÿÿÿÿ8á‹²–,
+hsquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(ù ®Íúÿÿÿÿ
+|squid:S3923"[Remove this conditional structure or edit its code blocks so that they're not all the same.(¬ ¤Úşÿÿÿÿ8è®–,
+h$squid:AssignmentInSubExpressionCheck".Extract the assignment out of this expression.(îÑ–ùÿÿÿÿ8è®–,
+\squid:UselessImportCheck".Remove this unused import 'android.view.View'.(Ø½­äşÿÿÿÿ8á‹²–,
+Fsquid:S00108")Either remove or fill this block of code.(ó´®8è®–,
+Zsquid:UselessImportCheck",Remove this unused import 'android.net.Uri'.(òêû‘ıÿÿÿÿ8á‹²–,
+Fsquid:S00108")Either remove or fill this block of code.(õœšÿ8è®–,
+Ksquid:S00108")Either remove or fill this block of code.(Õó³÷úÿÿÿÿ8è®–,
