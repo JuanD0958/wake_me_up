@@ -185,6 +185,6 @@ Temporary Items
 
 ### Sonar ###
 #Sonar generated dir
-.idea/sonarlint/*/*.*
+.idea/sonarlint/*/*
 
 # End of https://www.gitignore.io/api/macos,android,androidstudio
