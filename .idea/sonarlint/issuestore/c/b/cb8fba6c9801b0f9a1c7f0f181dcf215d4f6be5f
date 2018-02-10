@@ -1,4 +1,0 @@
-
-csquid:S00101"MRename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.(ίκί»
-Zsquid:UselessImportCheck"8Remove this unused import 'java.util.function.Function'.(»³Ν
-Osquid:S1118":Add a private constructor to hide the implicit public one.(ίκί»

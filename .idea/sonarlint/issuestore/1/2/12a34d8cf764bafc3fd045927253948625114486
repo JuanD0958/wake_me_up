@@ -1,5 +1,0 @@
-
-vsquid:S1450"ZRemove the "mapFragment" field and declare it as a local variable in the relevant methods.(Åıùô8ó›—,
-ssquid:S1450"WRemove the "geocoder" field and declare it as a local variable in the relevant methods.(—…§¡8ıóˆš—,
-Dsquid:S1185"(Remove this method to simply inherit it.(ßìê¯8¤İ£û“,
-Csquid:S1604"(Make this anonymous inner class a lambda(ìĞ¨|8·†Ëî—,

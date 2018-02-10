@@ -1,5 +1,0 @@
-
-csquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(£ üÜ
-wsquid:S1450"VRemove the "binding" field and declare it as a local variable in the relevant methods.(Ï™¤®øÿÿÿÿ8ûÜ þ“,
-b$squid:AssignmentInSubExpressionCheck".Extract the assignment out of this expression.(Ë¹P8Õ¬Âî—,
-Lsquid:S1068"+Remove this unused "binding" private field.(Ï™¤®øÿÿÿÿ8ªÞÚþ“,
