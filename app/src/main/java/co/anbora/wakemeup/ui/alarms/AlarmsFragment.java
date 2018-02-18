@@ -2,10 +2,12 @@ package co.anbora.wakemeup.ui.alarms;
 
 import android.Manifest;
 import android.app.PendingIntent;
+import android.arch.lifecycle.LifecycleObserver;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -25,23 +27,27 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.R;
 import co.anbora.wakemeup.adapter.alarms.AlarmsAdapter;
+import co.anbora.wakemeup.broadcast.GeofenceBroadcastReceiver;
 import co.anbora.wakemeup.databinding.FragmentAlarmsBinding;
-import co.anbora.wakemeup.device.location.Callback;
-import co.anbora.wakemeup.device.location.LocationComponentListenerImpl;
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
 import co.anbora.wakemeup.service.Constants;
 import co.anbora.wakemeup.service.GeofenceErrorMessages;
-import co.anbora.wakemeup.service.GeofenceTransitionsIntentService;
+import co.anbora.wakemeup.service.GeofenceTransitionsJobIntentService;
 import co.anbora.wakemeup.ui.addalarm.AddAlarmActivity;
 import co.anbora.wakemeup.util.Utilities;
 import ru.alexbykov.nopermission.PermissionHelper;
@@ -70,9 +76,13 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
     private PendingIntent mGeofencePendingIntent;
     private SupportMapFragment mMapFragment;
 
-    private LocationComponentListenerImpl observerLocation;
+    private LifecycleObserver observerLocation;
 
     private PermissionHelper permissionHelper;
+
+    private GoogleMap googleMap;
+    private List<Circle> listDrawAlarms;
+    private Marker currentMarker;
 
     public AlarmsFragment() {
     }
@@ -97,6 +107,7 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
     private void setupUX() {
         // Empty list for storing geofences.
         mGeofenceList = new ArrayList<>();
+        listDrawAlarms = new LinkedList<>();
 
         mGeofencingClient = LocationServices.getGeofencingClient(getActivity());
 
@@ -129,7 +140,36 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
         super.onStart();
         if (!Utilities.checkPermissions(getActivity())) {
             Utilities.requestPermissions(TAG, getActivity(), R.string.permission_rationale, binding.contentLayout.getRootView());
+        } else {
+            performPendingGeofenceTask();
         }
+    }
+
+    /**
+     * Returns true if geofences were added, otherwise false.
+     */
+    private boolean getGeofencesAdded() {
+        return PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(
+                Constants.GEOFENCES_ADDED_KEY, false);
+    }
+
+    /**
+     * Stores whether geofences were added ore removed in {@link SharedPreferences};
+     *
+     * @param added Whether geofences were added or removed.
+     */
+    private void updateGeofencesAdded(boolean added) {
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .edit()
+                .putBoolean(Constants.GEOFENCES_ADDED_KEY, added)
+                .apply();
+    }
+
+    /**
+     * Performs the geofencing task that was pending until location permission was granted.
+     */
+    private void performPendingGeofenceTask() {
+        addGeofences();
     }
 
     @Override
@@ -151,6 +191,22 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
         }
     }
 
+    @Override
+    public void drawAllarmsInMap(List<AlarmGeofence> alarms) {
+        if (!alarms.isEmpty()) {
+
+            listDrawAlarms.forEach(Circle::remove);
+            listDrawAlarms.clear();
+
+            LatLng alarmLocation;
+            for (AlarmGeofence alarm : alarms){
+                alarmLocation = new LatLng(alarm.latitude(), alarm.longitude());
+                listDrawAlarms.add(this.googleMap.addCircle(new CircleOptions().radius(Constants.GEOFENCE_RADIUS_IN_METERS)
+                        .center(alarmLocation)));
+            }
+        }
+    }
+
     /**
      * Gets a PendingIntent to send with the request to add or remove Geofences. Location Services
      * issues the Intent inside this PendingIntent whenever a geofence transition occurs for the
@@ -163,10 +219,11 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
         if (mGeofencePendingIntent != null) {
             return mGeofencePendingIntent;
         }
-        Intent intent = new Intent(getActivity(), GeofenceTransitionsIntentService.class);
+        Intent intent = new Intent(getActivity(), GeofenceBroadcastReceiver.class);
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
         // addGeofences() and removeGeofences().
-        return PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mGeofencePendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return mGeofencePendingIntent;
     }
 
     @Override
@@ -286,20 +343,25 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
     }
 
     @Override
-    public void onMapReady(final GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) {
+
 
         googleMap.getUiSettings().setMapToolbarEnabled(false);
+        this.googleMap = googleMap;
 
-        observerLocation = new LocationComponentListenerImpl(getActivity(), getLifecycle(), new Callback() {
-            @Override
-            public void execute(Location location) {
-                googleMap.clear();
-                LatLng currentLocation = new LatLng(location.getLatitude()
-                        , location.getLongitude());
-                googleMap.addMarker(new MarkerOptions().position(currentLocation)
-                        .title("Mi ubicacion"));
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
+        observerLocation = Injection.provideLocationComponent(getActivity(), getLifecycle(), location ->  {
+
+            if (currentMarker != null) {
+                currentMarker.remove();
             }
+
+            LatLng currentLocation = new LatLng(location.getLatitude()
+                    , location.getLongitude());
+
+            currentMarker = this.googleMap.addMarker(new MarkerOptions().position(currentLocation)
+                    .title(getString(R.string.current_location)));
+
+            this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
         });
 
         getLifecycle().addObserver(observerLocation);

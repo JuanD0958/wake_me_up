@@ -48,6 +48,7 @@ public class AlarmsPresenter implements AlarmsContract.Presenter {
             public void onSuccess(GetAlarms.ResponseValues response) {
                 if (view != null) {
                     view.showAlarms(response.getAlarms());
+                    view.drawAllarmsInMap(response.getAlarms());
                 }
             }
 

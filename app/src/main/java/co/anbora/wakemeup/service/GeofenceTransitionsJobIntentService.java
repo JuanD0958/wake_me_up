@@ -25,6 +25,8 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
@@ -36,8 +38,11 @@ import com.google.android.gms.location.GeofencingEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.MainActivity;
 import co.anbora.wakemeup.R;
+import co.anbora.wakemeup.device.notification.Notifications;
+import co.anbora.wakemeup.device.vibration.Vibrations;
 
 /**
  * Listener for geofence transition changes.
@@ -46,28 +51,25 @@ import co.anbora.wakemeup.R;
  * the transition type and geofence id(s) that triggered the transition. Creates a notification
  * as the output.
  */
-public class GeofenceTransitionsIntentService extends IntentService {
+public class GeofenceTransitionsJobIntentService extends JobIntentService {
+
+    private static final int JOB_ID = 573;
 
     private static final String TAG = "GeofenceTransitionsIS";
 
     private static final String CHANNEL_ID = "channel_01";
 
-    /**
-     * This constructor is required, and calls the super IntentService(String)
-     * constructor with the name for a worker thread.
-     */
-    public GeofenceTransitionsIntentService() {
-        // Use the TAG to name the worker thread.
-        super(TAG);
-    }
+    private static final int TIME_MILLIS = 400;
 
     /**
-     * Handles incoming intents.
-     * @param intent sent by Location Services. This Intent is provided to Location
-     *               Services (inside a PendingIntent) when addGeofences() is called.
+     * Convenience method for enqueuing work in to this service.
      */
+    public static void enqueueWork(Context context, Intent intent) {
+        enqueueWork(context, GeofenceTransitionsJobIntentService.class, JOB_ID, intent);
+    }
+
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleWork(@NonNull Intent intent) {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = GeofenceErrorMessages.getErrorString(this,
@@ -128,8 +130,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
      */
     private void sendNotification(String notificationDetails) {
         // Get an instance of the Notification manager
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Notifications mNotificationManager = Injection.provideNotification(getApplicationContext());
 
         // Android O requires a Notification Channel.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -139,7 +140,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
                     new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
 
             // Set the Notification Channel for the Notification Manager.
-            mNotificationManager.createNotificationChannel(mChannel);
+            mNotificationManager.showNotification(0, mChannel);
         }
 
         // Create an explicit content Intent that starts the main Activity.
@@ -181,7 +182,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
         builder.setAutoCancel(true);
 
         // Issue the notification
-        mNotificationManager.notify(0, builder.build());
+        mNotificationManager.showNotification(0, builder.build());
+        vibrate();
     }
 
     /**
@@ -200,4 +202,10 @@ public class GeofenceTransitionsIntentService extends IntentService {
                 return getString(R.string.unknown_geofence_transition);
         }
     }
+
+    private void vibrate() {
+        Vibrations vibrations = Injection.provideVibrations(getApplicationContext());
+        vibrations.vibrate(TIME_MILLIS);
+    }
+
 }

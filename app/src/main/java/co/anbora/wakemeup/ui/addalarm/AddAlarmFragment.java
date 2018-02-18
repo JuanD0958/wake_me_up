@@ -154,12 +154,9 @@ public class AddAlarmFragment extends Fragment implements AddAlarmContract.View,
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
         this.googleMap.animateCamera(cameraUpdate);
 
-        this.googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-                searchAddress(latLng);
-                showMarkerInMap(latLng.latitude, latLng.longitude);
-            }
+        this.googleMap.setOnMapLongClickListener(locationSelected -> {
+            searchAddress(locationSelected);
+            showMarkerInMap(locationSelected.latitude, locationSelected.longitude);
         });
     }
 

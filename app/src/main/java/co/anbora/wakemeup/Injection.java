@@ -1,9 +1,17 @@
 package co.anbora.wakemeup;
 
+import android.app.Activity;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
 import android.content.Context;
 
 import co.anbora.wakemeup.data.Sdk;
-import co.anbora.wakemeup.data.SdkImpl;
+import co.anbora.wakemeup.device.location.Callback;
+import co.anbora.wakemeup.device.location.LocationComponentListenerImpl;
+import co.anbora.wakemeup.device.notification.Notifications;
+import co.anbora.wakemeup.device.notification.NotificationsImpl;
+import co.anbora.wakemeup.device.vibration.Vibrations;
+import co.anbora.wakemeup.device.vibration.VibrationsImpl;
 import co.anbora.wakemeup.domain.repository.AlarmGeofenceRepository;
 import co.anbora.wakemeup.domain.usecase.UseCaseHandler;
 import co.anbora.wakemeup.domain.usecase.UseCaseUiThreadPool;
@@ -49,4 +57,15 @@ public class Injection {
         return new UpdateStateAlarm(provideRepository());
     }
 
+    public static Notifications provideNotification(Context context){
+        return new NotificationsImpl(context);
+    }
+
+    public static Vibrations provideVibrations(Context context) {
+        return new VibrationsImpl(context);
+    }
+
+    public static LifecycleObserver provideLocationComponent(Activity context, Lifecycle lifecycle, Callback callback) {
+        return new LocationComponentListenerImpl(context, lifecycle, callback);
+    }
 }

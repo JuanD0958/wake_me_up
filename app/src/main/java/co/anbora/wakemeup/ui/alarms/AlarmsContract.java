@@ -16,6 +16,8 @@ public interface AlarmsContract {
 
         void showAlarms(List<AlarmGeofence> alarms);
 
+        void drawAllarmsInMap(List<AlarmGeofence> alarms);
+
         void showAddAlarm();
 
         void showNoAlarms();
