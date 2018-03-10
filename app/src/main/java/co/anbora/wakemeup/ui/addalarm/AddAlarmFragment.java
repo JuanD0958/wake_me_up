@@ -1,5 +1,7 @@
 package co.anbora.wakemeup.ui.addalarm;
 
+import android.location.Location;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.location.Address;
 import android.location.Geocoder;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,14 +26,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.R;
 import co.anbora.wakemeup.data.repository.model.AlarmGeofenceModel;
 import co.anbora.wakemeup.databinding.FragmentAddAlarmBinding;
+import co.anbora.wakemeup.device.location.CallbackLocation;
+import co.anbora.wakemeup.device.location.LocationSettings;
+import co.anbora.wakemeup.device.location.OnLastLocationListener;
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
 
 
 public class AddAlarmFragment extends Fragment implements AddAlarmContract.View, OnMapReadyCallback {
 
+    public static final int ZOOM_LEVEL = 17;
     private FragmentAddAlarmBinding binding;
 
     private AddAlarmContract.Presenter presenter;
@@ -41,6 +49,8 @@ public class AddAlarmFragment extends Fragment implements AddAlarmContract.View,
     private AlarmGeofence alarm;
 
     private SupportMapFragment mapFragment;
+
+    private OnLastLocationListener locationComponent;
 
     public AddAlarmFragment() {
         // Required empty public constructor
@@ -150,13 +160,25 @@ public class AddAlarmFragment extends Fragment implements AddAlarmContract.View,
 
         this.googleMap = googleMap;
 
-        LatLng latLng = new LatLng(6.251608, -75.544006);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
-        this.googleMap.animateCamera(cameraUpdate);
+        this.locationComponent = Injection.provideLocationComponent(getContext(), null);
 
-        this.googleMap.setOnMapLongClickListener(locationSelected -> {
-            searchAddress(locationSelected);
-            showMarkerInMap(locationSelected.latitude, locationSelected.longitude);
+        this.locationComponent.onLastLocation(new CallbackLocation() {
+            @Override
+            public void onLocationResult(Location location) {
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, ZOOM_LEVEL);
+                googleMap.animateCamera(cameraUpdate);
+
+                googleMap.setOnMapLongClickListener(locationSelected -> {
+                    searchAddress(locationSelected);
+                    showMarkerInMap(locationSelected.latitude, locationSelected.longitude);
+                });
+            }
+
+            @Override
+            public void onLocationError() {
+
+            }
         });
     }
 

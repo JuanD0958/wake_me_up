@@ -1,13 +1,11 @@
 package co.anbora.wakemeup;
 
-import android.app.Activity;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
 import android.content.Context;
 
 import co.anbora.wakemeup.data.Sdk;
-import co.anbora.wakemeup.device.location.Callback;
-import co.anbora.wakemeup.device.location.LocationComponentListenerImpl;
+import co.anbora.wakemeup.device.location.LocationComponent;
+import co.anbora.wakemeup.device.location.LocationSettings;
+import co.anbora.wakemeup.device.location.OnLastLocationListener;
 import co.anbora.wakemeup.device.notification.Notifications;
 import co.anbora.wakemeup.device.notification.NotificationsImpl;
 import co.anbora.wakemeup.device.vibration.Vibrations;
@@ -65,7 +63,23 @@ public class Injection {
         return new VibrationsImpl(context);
     }
 
-    public static LifecycleObserver provideLocationComponent(Activity context, Lifecycle lifecycle, Callback callback) {
-        return new LocationComponentListenerImpl(context, lifecycle, callback);
+    public static OnLastLocationListener provideLocationComponent(Context context
+            , LocationSettings locationSettings) {
+
+        return new LocationComponent.Builder()
+                .locationSettings(locationSettings)
+                .build(context);
+    }
+
+    public static OnLastLocationListener provideLocationComponent(Context context
+            , LocationSettings locationSettings
+            , long meters
+            , long seconds
+            , int priority) {
+
+        return new LocationComponent.Builder()
+                .locationRequest(meters, seconds, priority)
+                .locationSettings(locationSettings)
+                .build(context);
     }
 }

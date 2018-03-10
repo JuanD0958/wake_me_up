@@ -2,10 +2,11 @@ package co.anbora.wakemeup.ui.alarms;
 
 import android.Manifest;
 import android.app.PendingIntent;
-import android.arch.lifecycle.LifecycleObserver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -19,10 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,10 +48,12 @@ import co.anbora.wakemeup.R;
 import co.anbora.wakemeup.adapter.alarms.AlarmsAdapter;
 import co.anbora.wakemeup.broadcast.GeofenceBroadcastReceiver;
 import co.anbora.wakemeup.databinding.FragmentAlarmsBinding;
+import co.anbora.wakemeup.device.location.CallbackLocation;
+import co.anbora.wakemeup.device.location.LocationSettings;
+import co.anbora.wakemeup.device.location.OnLastLocationListener;
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
 import co.anbora.wakemeup.service.Constants;
 import co.anbora.wakemeup.service.GeofenceErrorMessages;
-import co.anbora.wakemeup.service.GeofenceTransitionsJobIntentService;
 import co.anbora.wakemeup.ui.addalarm.AddAlarmActivity;
 import co.anbora.wakemeup.util.Utilities;
 import ru.alexbykov.nopermission.PermissionHelper;
@@ -59,6 +65,10 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
     private FragmentAlarmsBinding binding;
     private AlarmsAdapter adapter;
     private AlarmsContract.Presenter presenter;
+
+    private final int METERS = 20;
+    private final int SECONDS = 10 * 1000;
+    private static final int REQUEST_CHECK_SETTINGS = 10;
 
     /**
      * Provides access to the Geofencing API.
@@ -76,7 +86,8 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
     private PendingIntent mGeofencePendingIntent;
     private SupportMapFragment mMapFragment;
 
-    private LifecycleObserver observerLocation;
+    private OnLastLocationListener locationComponent;
+    private LocationSettings locationSettings;
 
     private PermissionHelper permissionHelper;
 
@@ -97,6 +108,7 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
                              Bundle savedInstanceState) {
 
         setupUI(inflater, container);
+        configureLocationSettings();
         setupUX();
         setupPermissionHelper();
         askLocationPermission();
@@ -106,6 +118,7 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
 
     private void setupUX() {
         // Empty list for storing geofences.
+
         mGeofenceList = new ArrayList<>();
         listDrawAlarms = new LinkedList<>();
 
@@ -113,6 +126,27 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
 
         mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this);
+    }
+
+    private void configureLocationSettings() {
+        locationSettings = new LocationSettings() {
+            @Override
+            public void addOnSuccessListener(LocationSettingsResponse locationSettingsResponse) {
+
+            }
+
+            @Override
+            public void addOnFailureListener(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    try {
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(getActivity(),
+                                REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                    }
+                }
+            }
+        };
     }
 
     private void setupUI(LayoutInflater inflater, ViewGroup container) {
@@ -349,7 +383,7 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
         googleMap.getUiSettings().setMapToolbarEnabled(false);
         this.googleMap = googleMap;
 
-        observerLocation = Injection.provideLocationComponent(getActivity(), getLifecycle(), location ->  {
+        /*locationComponent = Injection.provideLocationComponent(getActivity(), getLifecycle(), location ->  {
 
             if (currentMarker != null) {
                 currentMarker.remove();
@@ -362,9 +396,37 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
                     .title(getString(R.string.current_location)));
 
             this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
-        });
+        });*/
 
-        getLifecycle().addObserver(observerLocation);
+        locationComponent = Injection.provideLocationComponent(getContext(),
+                locationSettings,
+                METERS, SECONDS, LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationComponent.whenLocationChange()
+                .onLocationChanged(new CallbackLocation() {
+                    @Override
+                    public void onLocationResult(Location location) {
+                        if (currentMarker != null) {
+                            currentMarker.remove();
+                        }
+
+                        LatLng currentLocation = new LatLng(location.getLatitude()
+                                , location.getLongitude());
+
+                        currentMarker = googleMap.addMarker(new MarkerOptions().position(currentLocation)
+                                .title(getString(R.string.current_location)));
+
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
+                    }
+
+                    @Override
+                    public void onLocationError() {
+
+                    }
+                }).attachState()
+                .observe(getLifecycle());
+
+        //getLifecycle().addObserver(locationComponent);
     }
 
     private void setupPermissionHelper() {
