@@ -169,7 +169,7 @@ public class LocationComponent implements OnLastLocationListener
             return this;
         }
 
-        private LocationComponent build(Context context) {
+        public LocationComponent build(Context context) {
             return new LocationComponent(context,
                     locationSettings,
                     locationRequest,
