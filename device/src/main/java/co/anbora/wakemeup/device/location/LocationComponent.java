@@ -20,7 +20,7 @@ import com.google.android.gms.tasks.Task;
 import static android.arch.lifecycle.Lifecycle.State.STARTED;
 
 /**
- * Location component
+ * Component to get the GPS location
  *
  * Created by dalgarins on 03/04/18.
  */

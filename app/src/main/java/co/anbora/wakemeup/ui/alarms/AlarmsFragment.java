@@ -383,50 +383,35 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
         googleMap.getUiSettings().setMapToolbarEnabled(false);
         this.googleMap = googleMap;
 
-        /*locationComponent = Injection.provideLocationComponent(getActivity(), getLifecycle(), location ->  {
-
-            if (currentMarker != null) {
-                currentMarker.remove();
-            }
-
-            LatLng currentLocation = new LatLng(location.getLatitude()
-                    , location.getLongitude());
-
-            currentMarker = this.googleMap.addMarker(new MarkerOptions().position(currentLocation)
-                    .title(getString(R.string.current_location)));
-
-            this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
-        });*/
-
         locationComponent = Injection.provideLocationComponent(getContext(),
                 locationSettings,
                 METERS, SECONDS, LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        locationComponent.whenLocationChange()
-                .onLocationChanged(new CallbackLocation() {
-                    @Override
-                    public void onLocationResult(Location location) {
-                        if (currentMarker != null) {
-                            currentMarker.remove();
-                        }
+        CallbackLocation callback = new CallbackLocation() {
+            @Override
+            public void onLocationResult(Location location) {
+                if (currentMarker != null) {
+                    currentMarker.remove();
+                }
 
-                        LatLng currentLocation = new LatLng(location.getLatitude()
-                                , location.getLongitude());
+                LatLng currentLocation = new LatLng(location.getLatitude()
+                        , location.getLongitude());
 
-                        currentMarker = googleMap.addMarker(new MarkerOptions().position(currentLocation)
-                                .title(getString(R.string.current_location)));
+                currentMarker = googleMap.addMarker(new MarkerOptions().position(currentLocation)
+                        .title(getString(R.string.current_location)));
 
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
-                    }
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
+            }
 
-                    @Override
-                    public void onLocationError() {
+            @Override
+            public void onLocationError() {
 
-                    }
-                }).attachState()
-                .observe(getLifecycle());
+            }
+        };
 
-        //getLifecycle().addObserver(locationComponent);
+        locationComponent.onLastLocation(callback)
+                .whenLocationChange()
+                .onLocationChanged(callback).attachState().observe(getLifecycle());
     }
 
     private void setupPermissionHelper() {
