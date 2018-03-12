@@ -56,4 +56,6 @@
     <string name="service_active">On</string>
     <string name="service_inactive">Off</string>
 
+    <string name="unable_service">Desactivar Alarmas</string>
+
 </resources>
