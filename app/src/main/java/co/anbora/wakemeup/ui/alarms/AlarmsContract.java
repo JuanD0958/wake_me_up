@@ -20,6 +20,8 @@ public interface AlarmsContract {
 
         void showAddAlarm();
 
+        void hideSwipeLayoutLoading();
+
         void showNoAlarms();
 
         void showAlarms();

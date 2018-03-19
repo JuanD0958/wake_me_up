@@ -49,6 +49,7 @@ public class AlarmsPresenter implements AlarmsContract.Presenter {
                 if (view != null) {
                     view.showAlarms(response.getAlarms());
                     view.drawAllarmsInMap(response.getAlarms());
+                    view.hideSwipeLayoutLoading();
                 }
             }
 

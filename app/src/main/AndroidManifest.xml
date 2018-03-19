@@ -40,16 +40,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <receiver
-            android:name=".broadcast.GeofenceBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true" />
-
-        <service
-            android:name=".service.GeofenceTransitionsJobIntentService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <service
             android:name=".quick.settings.QuickActiveAlarm"
             android:icon="@drawable/common_full_open_on_phone"
@@ -63,7 +53,12 @@
         <activity
             android:name=".ui.addalarm.AddAlarmActivity"
             android:label="@string/title_activity_add_alarm"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
+
+        <service
+            android:name=".service.LocationUpdateService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

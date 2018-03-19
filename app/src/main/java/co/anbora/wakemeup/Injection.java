@@ -31,7 +31,7 @@ public class Injection {
         return MainThreadImpl.getInstance();
     }
 
-    private static AlarmGeofenceRepository provideRepository() {
+    public static AlarmGeofenceRepository provideRepository() {
         return Sdk.instance();
     }
 
@@ -73,12 +73,12 @@ public class Injection {
 
     public static OnLastLocationListener provideLocationComponent(Context context
             , LocationSettings locationSettings
-            , long meters
-            , long seconds
+            , long interval
+            , long fastInterval
             , int priority) {
 
         return new LocationComponent.Builder()
-                .locationRequest(meters, seconds, priority)
+                .locationRequest(interval, fastInterval, priority)
                 .locationSettings(locationSettings)
                 .build(context);
     }

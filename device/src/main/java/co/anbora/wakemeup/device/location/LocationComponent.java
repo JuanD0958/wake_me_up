@@ -27,6 +27,7 @@ import static android.arch.lifecycle.Lifecycle.State.STARTED;
 
 public class LocationComponent implements OnLastLocationListener
         , OnLocationChangeListener
+        , OnLocationRequest
         , OnObserveState
         , LifecycleObserver {
 
@@ -97,6 +98,11 @@ public class LocationComponent implements OnLastLocationListener
     }
 
     @Override
+    public OnLocationRequest whenRequestLocation() {
+        return this;
+    }
+
+    @Override
     public OnObserveState attachState() {
         return this;
     }
@@ -128,21 +134,31 @@ public class LocationComponent implements OnLastLocationListener
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     void start() {
 
-        if (lifecycle.getCurrentState().isAtLeast(STARTED)
-                && mLocationCallback != null
-                && UtilPermission.checkLocationPermission(context)) {
-
-            mFusedLocationClient.requestLocationUpdates(mLocationRequest,
-                    mLocationCallback, Looper.myLooper());
+        if (lifecycle.getCurrentState().isAtLeast(STARTED)) {
+            this.requestLocationUpdates();
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     void stop() {
 
+        if (mLocationCallback != null) {
+            this.removeLocationUpdates();
+        }
+    }
+
+    @Override
+    public void requestLocationUpdates() {
         if (mLocationCallback != null
                 && UtilPermission.checkLocationPermission(context)) {
+            mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                    mLocationCallback, Looper.myLooper());
+        }
+    }
 
+    @Override
+    public void removeLocationUpdates() {
+        if (UtilPermission.checkLocationPermission(context)) {
             mFusedLocationClient.removeLocationUpdates(mLocationCallback);
         }
     }

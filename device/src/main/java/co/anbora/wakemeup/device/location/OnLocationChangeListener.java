@@ -10,6 +10,8 @@ public interface OnLocationChangeListener {
 
     OnLocationChangeListener onLocationChanged(@NonNull CallbackLocation callback);
 
+    OnLocationRequest whenRequestLocation();
+
     OnObserveState attachState();
 
 }

@@ -44,6 +44,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:11.8.0'
     implementation 'com.google.android.gms:play-services-location:11.8.0'
 
+    //Map utils
+    compile 'com.google.maps.android:android-maps-utils:0.4.4'
+
     //permission
     compile 'ru.alexbykov:nopermission:1.1.2'
 
