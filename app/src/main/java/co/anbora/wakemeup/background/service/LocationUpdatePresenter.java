@@ -52,7 +52,9 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
                     new UseCase.UseCaseCallback<GetAlarms.ResponseValues>() {
                         @Override
                         public void onSuccess(GetAlarms.ResponseValues response) {
-                            saveHistoricalFrom(validateAlarms(response, latLngCurrent));
+                            AlarmGeofence alarmActivated = validateAlarms(response, latLngCurrent);
+                            saveHistoricalFrom(alarmActivated);
+                            view.sendNotification(alarmActivated.description());
                         }
 
                         @Override
@@ -68,7 +70,6 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
         for (AlarmGeofence geofence: response.getAlarms()) {
             latLngIterator = new LatLng(geofence.latitude(), geofence.longitude());
             if (SphericalUtil.computeDistanceBetween(latLngIterator, latLngCurrent) <= Constants.GEOFENCE_RADIUS_IN_METERS) {
-                view.sendNotification(geofence.description());
                 return geofence;
             }
         }
