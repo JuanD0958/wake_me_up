@@ -41,21 +41,21 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation 'com.android.support:cardview-v7:26.1.0'
-    implementation 'com.google.android.gms:play-services-maps:11.8.0'
-    implementation 'com.google.android.gms:play-services-location:11.8.0'
+    implementation 'com.google.android.gms:play-services-maps:12.0.0'
+    implementation 'com.google.android.gms:play-services-location:12.0.0'
 
     //Map utils
-    compile 'com.google.maps.android:android-maps-utils:0.4.4'
+    implementation 'com.google.maps.android:android-maps-utils:0.4.4'
 
     //permission
-    compile 'ru.alexbykov:nopermission:1.1.2'
+    implementation 'ru.alexbykov:nopermission:1.1.2'
 
     //data
-    compile project(path: ':data')
+    implementation project(path: ':data')
 
     //device
-    compile project(path: ':device')
+    implementation project(path: ':device')
 
     //domain
-    compile project(path: ':domain')
+    implementation project(path: ':domain')
 }

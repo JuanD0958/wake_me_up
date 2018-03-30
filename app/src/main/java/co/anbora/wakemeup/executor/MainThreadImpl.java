@@ -14,12 +14,12 @@ public class MainThreadImpl implements UseCaseUiThreadPool {
     private static MainThreadImpl mainThread;
 
     private static class SingletonHelper {
-        private static final MainThreadImpl mainThread = new MainThreadImpl();
+        private static final MainThreadImpl INSTANCE = new MainThreadImpl();
     }
 
     public static MainThreadImpl getInstance(){
 
-        return SingletonHelper.mainThread;
+        return SingletonHelper.INSTANCE;
     }
 
     private final Handler mHandler = new Handler();

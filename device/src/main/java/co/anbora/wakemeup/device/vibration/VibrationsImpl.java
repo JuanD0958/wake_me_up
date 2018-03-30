@@ -36,4 +36,9 @@ public class VibrationsImpl implements Vibrations {
     public void vibrate(long[] pattern) {
         this.vibrator.vibrate(pattern, REPEAT);
     }
+
+    @Override
+    public void cancel() {
+        this.vibrator.cancel();
+    }
 }

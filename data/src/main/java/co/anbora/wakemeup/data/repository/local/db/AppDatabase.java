@@ -1,26 +1,41 @@
 package co.anbora.wakemeup.data.repository.local.db;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 
 import co.anbora.wakemeup.data.repository.local.db.dao.AlarmGeofenceDao;
+import co.anbora.wakemeup.data.repository.local.db.dao.HistoryAlarmDao;
 import co.anbora.wakemeup.data.repository.local.db.model.AlarmGeofenceEntity;
+import co.anbora.wakemeup.data.repository.local.db.model.HistoryAlarmEntity;
 
 /**
  * Created by dalgarins.
  */
-@Database(entities = {AlarmGeofenceEntity.class}, version = 1, exportSchema = false)
+@Database(entities = {AlarmGeofenceEntity.class, HistoryAlarmEntity.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     static final String DATABASE_NAME = "alarm-geofence-db";
 
     public abstract AlarmGeofenceDao alarmDao();
 
+    public abstract HistoryAlarmDao historyDao();
+
     /** The only instance */
     private static AppDatabase sInstance;
+
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE " + AlarmGeofenceEntity.TABLE_NAME
+                    + " ADD COLUMN " + AlarmGeofenceEntity.COLUMN_VISIBLE +
+                    " INTEGER");
+        }
+    };
 
     /**
      * Gets the singleton instance of AppDatabase.
@@ -32,6 +47,7 @@ public abstract class AppDatabase extends RoomDatabase {
         if (sInstance == null) {
             sInstance = Room
                     .databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME)
+                    .addMigrations(MIGRATION_1_2)
                     .build();
         }
         return sInstance;

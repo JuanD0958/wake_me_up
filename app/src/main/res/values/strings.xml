@@ -7,6 +7,11 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
+    //menu drawer
+    <string name="principal">Principal</string>
+    <string name="history">Histórico</string>
+    <string name="about">Sobre mi</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="name_alarm">Alarma</string>
@@ -56,10 +61,12 @@
     <string name="service_active">On</string>
     <string name="service_inactive">Off</string>
 
-    <string name="unable_service">Desactivar Alarmas</string>
+    <string name="unable_service">Activar Alarmas</string>
 
     <string name="launch_activity">Launch activity</string>
     <string name="remove_location_updates">Remove location updates</string>
-    <string name="location_updated">Location Updated: %1$s</string>
+    <string name="location_updated">Buscando alarmas: %1$s</string>
+
+
 
 </resources>

@@ -56,7 +56,7 @@
             android:theme="@style/AppTheme" />
 
         <service
-            android:name=".service.LocationUpdateService"
+            android:name=".background.service.LocationUpdateService"
             android:enabled="true"
             android:exported="true" />
     </application>

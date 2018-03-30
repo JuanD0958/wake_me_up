@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
+import co.anbora.wakemeup.domain.model.HistoryAlarm;
+import co.anbora.wakemeup.domain.repository.HistoryAlarmRepository;
 import co.anbora.wakemeup.domain.repository.Repository;
 
 public class SdkImpl implements Repository {
@@ -32,5 +34,20 @@ public class SdkImpl implements Repository {
     @Override
     public void updateAlarm(AlarmGeofence alarm, Boolean state) {
         this.repository.updateAlarm(alarm, state);
+    }
+
+    @Override
+    public void getHistoryAlarms(LoadHistoryAlarmsCallback callback) {
+        this.repository.getHistoryAlarms(callback);
+    }
+
+    @Override
+    public void getHistoryAlarm(Long internalId, GetHistoryAlarmCallback callback) {
+        this.repository.getHistoryAlarm(internalId, callback);
+    }
+
+    @Override
+    public void saveHistoryAlarm(HistoryAlarm historyAlarm) {
+        this.repository.saveHistoryAlarm(historyAlarm);
     }
 }

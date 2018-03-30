@@ -1,4 +1,4 @@
 package co.anbora.wakemeup.domain.repository;
 
-public interface Repository extends AlarmGeofenceRepository {
+public interface Repository extends AlarmGeofenceRepository, HistoryAlarmRepository {
 }

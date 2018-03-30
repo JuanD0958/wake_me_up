@@ -1,74 +1,44 @@
-package co.anbora.wakemeup.service;
+package co.anbora.wakemeup.background.service;
 
 import android.app.ActivityManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.SphericalUtil;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.List;
 
+import co.anbora.wakemeup.Constants;
 import co.anbora.wakemeup.Injection;
-import co.anbora.wakemeup.MainActivity;
 import co.anbora.wakemeup.R;
 import co.anbora.wakemeup.Utils;
+import co.anbora.wakemeup.background.shared.preferences.SharedPreferencesManager;
 import co.anbora.wakemeup.device.location.CallbackLocation;
 import co.anbora.wakemeup.device.location.OnLastLocationListener;
 import co.anbora.wakemeup.device.location.OnLocationRequest;
 import co.anbora.wakemeup.device.notification.Notifications;
 import co.anbora.wakemeup.device.vibration.Vibrations;
-import co.anbora.wakemeup.domain.model.AlarmGeofence;
-import co.anbora.wakemeup.domain.repository.AlarmGeofenceRepository;
 
 public class LocationUpdateService extends Service implements LocationUpdateContract.View {
 
     private static final String TAG = LocationUpdateService.class.getSimpleName();
-    public static final int NOTIFICATION_ID = 12345678;
-    public static final String CHANNEL_ID_2 = "987654321";
+
     private Handler mServiceHandler;
-
-    private static final String PACKAGE_NAME =
-            "co.anbora.wakemeup.service";
-
-    private static final String EXTRA_STARTED_FROM_NOTIFICATION = PACKAGE_NAME +
-            ".started_from_notification";
-
-    /**
-     * The name of the channel for notifications.
-     */
-    private static final String CHANNEL_ID = "channel_01";
-
-    public static final String ACTION_BROADCAST = PACKAGE_NAME + ".broadcast";
-
-    public static final String EXTRA_LOCATION = PACKAGE_NAME + ".location";
 
     private static final int TIME_MILLIS = 400;
 
-    private NotificationManager mNotificationManager;
-
-    private Notifications notifyNotifications;
+    private Notifications notifications;
+    private SharedPreferencesManager sharedPreferencesManager;
 
     /**
      * Used to check whether the bound activity has really gone away and not unbound as part of an
@@ -85,8 +55,6 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     private OnLastLocationListener locationComponent;
     private OnLocationRequest locationRequest;
 
-    private AlarmGeofenceRepository repository;
-
     private LocationUpdateContract.Presenter presenter;
 
     /**
@@ -100,14 +68,18 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     @Override
     public void onCreate() {
 
-        presenter = new LocationUpdatePresenter(this, Injection.provideUseCaseHandler(), Injection.provideGetAlarms());
+        presenter = new LocationUpdatePresenter(this,
+                Injection.provideUseCaseHandler(),
+                Injection.provideGetAlarms(),
+                Injection.provideCheckAlarmActivated());
 
         HandlerThread handlerThread = new HandlerThread(TAG);
         handlerThread.start();
         mServiceHandler = new Handler(handlerThread.getLooper());
 
-        notifyNotifications = Injection.provideNotification(getApplicationContext());
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);;
+        notifications = Injection.provideNotificationManager(getApplicationContext());
+        sharedPreferencesManager = Injection.provideSharedPreferencesManager(getApplicationContext());
+
 
         CallbackLocation callback = new CallbackLocation() {
             @Override
@@ -120,8 +92,6 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
 
             }
         };
-
-        repository = Injection.provideRepository();
 
         locationComponent = Injection.provideLocationComponent(getApplicationContext(),
                 null,
@@ -136,7 +106,7 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     }
 
     public void requestLocation() {
-        Utils.setRequestingLocationUpdates(this, true);
+        sharedPreferencesManager.setRequestingLocationUpdates(true);
         startService(new Intent(getApplicationContext(), LocationUpdateService.class));
         locationRequest.requestLocationUpdates();
     }
@@ -144,22 +114,34 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Service started");
-        boolean startedFromNotification = intent.getBooleanExtra(EXTRA_STARTED_FROM_NOTIFICATION,
-                false);
-
-        // We got here because the user decided to remove location updates from the notification.
-        if (startedFromNotification) {
-            Utils.updateGeofencesAdded(this, false);
-            removeLocation();
-            stopSelf();
-        }
+        validateStartedNotification(intent);
+        validateActiveAlarm(intent);
         // Tells the system to not try to recreate the service after it has been killed.
         return START_NOT_STICKY;
     }
 
+    private void validateActiveAlarm(Intent intent) {
+        boolean markAlarmAsActive = intent.getBooleanExtra(Constants.MARK_ALARM_AS_ACTIVE, false);
+        if (!markAlarmAsActive) {
+            //TO-DO write in shared preferences to validate
+        }
+    }
+
+    private void validateStartedNotification(Intent intent) {
+        boolean startedFromNotification = intent.getBooleanExtra(Constants.EXTRA_STARTED_FROM_NOTIFICATION,
+                false);
+
+        // We got here because the user decided to remove location updates from the notification.
+        if (startedFromNotification) {
+            sharedPreferencesManager.addedGeofence(false);
+            removeLocation();
+            stopSelf();
+        }
+    }
+
     public void removeLocation() {
         locationRequest.removeLocationUpdates();
-        Utils.setRequestingLocationUpdates(this, false);
+        sharedPreferencesManager.setRequestingLocationUpdates(false);
         stopSelf();
     }
 
@@ -190,19 +172,15 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
         // service. If this method is called due to a configuration change in MainActivity, we
         // do nothing. Otherwise, we make this service a foreground service.
         if (!mChangingConfiguration
-                && Utils.requestingLocationUpdates(this)
-                && Utils.getGeofencesAdded(this)) {
+                && sharedPreferencesManager.requestingLocationUpdates()
+                && sharedPreferencesManager.addedGeofence()) {
             Log.i(TAG, "Starting foreground service");
-            /*
-            // TODO(developer). If targeting O, use the following code.
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
-                mNotificationManager.startServiceInForeground(new Intent(this,
-                        LocationUpdateService.class), NOTIFICATION_ID, getNotification());
-            } else {
-                startForeground(NOTIFICATION_ID, getNotification());
-            }*/
 
-            startForeground(NOTIFICATION_ID, getNotification());
+            startForeground(Constants.NOTIFICATION_ID, Injection.provideNotificationForegroundService(
+                    getLocationTitle(getApplicationContext()),
+                    getLocationText(mLocation),
+                    getApplicationContext(),
+                    getResources()));
 
         }
         return true; // Ensures onRebind() is called when a client re-binds.
@@ -241,64 +219,26 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
         }
     }
 
-
-    /**
-     * Returns the {@link NotificationCompat} used as part of the foreground service.
-     */
-    private Notification getNotification() {
-        Intent intent = new Intent(this, LocationUpdateService.class);
-
-        CharSequence text = getLocationText(mLocation);
-
-        // Extra to help us figure out if we arrived in onStartCommand via the notification or not.
-        intent.putExtra(EXTRA_STARTED_FROM_NOTIFICATION, true);
-
-        // The PendingIntent that leads to a call to onStartCommand() in this service.
-        PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // The PendingIntent to launch activity.
-        PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .addAction(R.drawable.ic_launch, getString(R.string.launch_activity),
-                        activityPendingIntent)
-                .addAction(R.drawable.ic_cancel, getString(R.string.remove_location_updates),
-                        servicePendingIntent)
-                .setContentText(text)
-                .setContentTitle(getLocationTitle(this))
-                .setOngoing(true)
-                .setPriority(Notification.PRIORITY_HIGH)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setTicker(text)
-                .setWhen(System.currentTimeMillis());
-
-        // Set the Channel ID for Android O.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder.setChannelId(CHANNEL_ID); // Channel ID
-        }
-
-        return builder.build();
-    }
-
     private void onNewLocation(Location location) {
         Log.i(TAG, "New location: " + location);
 
         mLocation = location;
-        if (Utils.getGeofencesAdded(getApplicationContext())) {
+        if (sharedPreferencesManager.addedGeofence()) {
             presenter.calculateLocationDistanceWithAlarms(mLocation);
         }
 
-
         // Notify anyone listening for broadcasts about the new location.
-        Intent intent = new Intent(ACTION_BROADCAST);
-        intent.putExtra(EXTRA_LOCATION, location);
+        Intent intent = new Intent(Constants.ACTION_BROADCAST);
+        intent.putExtra(Constants.EXTRA_LOCATION, location);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 
         // Update notification content if running as a foreground service.
         if (serviceIsRunningInForeground(this)) {
-            mNotificationManager.notify(NOTIFICATION_ID, getNotification());
+            notifications.showNotification(Constants.NOTIFICATION_ID, Injection.provideNotificationForegroundService(
+                    getLocationTitle(getApplicationContext()),
+                    getLocationText(mLocation),
+                    getApplicationContext(),
+                    getResources()));
         }
     }
 
@@ -308,66 +248,11 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
      */
     @Override
     public void sendNotification(String notificationDetails) {
-        // Get an instance of the Notification manager
-        Notifications mNotificationManager = Injection.provideNotification(getApplicationContext());
 
-        // Android O requires a Notification Channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.app_name);
-            // Create the channel for the notification
-            NotificationChannel mChannel =
-                    new NotificationChannel(CHANNEL_ID_2, name, NotificationManager.IMPORTANCE_DEFAULT);
-
-            // Set the Notification Channel for the Notification Manager.
-            mNotificationManager.showNotification(0, mChannel);
-        }
-
-        // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-
-        // Construct a task stack.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-
-        // Add the main Activity to the task stack as the parent.
-        stackBuilder.addParentStack(MainActivity.class);
-
-        // Push the content Intent onto the stack.
-        stackBuilder.addNextIntent(notificationIntent);
-
-        // Get a PendingIntent containing the entire back stack.
-        PendingIntent notificationPendingIntent =
-                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Get a notification builder that's compatible with platform versions >= 4
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-
-        // Define the notification settings.
-        builder.setSmallIcon(R.drawable.ic_launcher_foreground)
-                // In a real app, you may want to use a library like Volley
-                // to decode the Bitmap.
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(),
-                        R.drawable.ic_launcher_foreground))
-                .setColor(Color.RED)
-                .setContentTitle(notificationDetails)
-                .setContentText(getString(R.string.geofence_transition_notification_text))
-                .setContentIntent(notificationPendingIntent);
-
-        // Set the Channel ID for Android O.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder.setChannelId(CHANNEL_ID_2); // Channel ID
-        }
-
-        // Dismiss notification once the user touches it.
-        builder.setAutoCancel(true);
-
-        // Issue the notification
-        mNotificationManager.showNotification(0, builder.build());
-        vibrate();
-    }
-
-    private void vibrate() {
-        Vibrations vibrations = Injection.provideVibrations(getApplicationContext());
-        vibrations.vibrate(TIME_MILLIS);
+        notifications.showNotification(Constants.NOTIFICATION_ALARM_ACTIVE_ID, Injection.provideNotificationAlarmDetected(notificationDetails,
+                getString(R.string.geofence_transition_notification_text),
+                getApplicationContext(),
+                getResources(), TIME_MILLIS));
     }
 
     /**

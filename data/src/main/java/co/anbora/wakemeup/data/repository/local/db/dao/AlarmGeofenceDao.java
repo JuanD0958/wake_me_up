@@ -20,7 +20,7 @@ public interface AlarmGeofenceDao {
      *
      * @return A {@link List} of all the alarms in the table.
      */
-    @Query("SELECT * FROM " + AlarmGeofenceEntity.TABLE_NAME)
+    @Query("SELECT * FROM " + AlarmGeofenceEntity.TABLE_NAME + " WHERE " + AlarmGeofenceEntity.COLUMN_VISIBLE + " = 1 ")
     List<AlarmGeofenceEntity> selectAll();
 
     /**
@@ -35,18 +35,18 @@ public interface AlarmGeofenceDao {
     /**
      * Inserts a alarm into the table.
      *
-     * @param bank A new alarm.
+     * @param alarm A new alarm.
      * @return The row ID of the newly inserted alarm.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insert(AlarmGeofenceEntity bank);
+    long insert(AlarmGeofenceEntity alarm);
 
     /**
      * Delete a alarm by the ID
      *
      * @return the number of alarm deleted
      */
-    @Query("DELETE FROM " + AlarmGeofenceEntity.TABLE_NAME + " WHERE " + AlarmGeofenceEntity.COLUMN_INTERNAL_ID + " = :internalId")
+    @Query("UPDATE " + AlarmGeofenceEntity.TABLE_NAME + " SET " + AlarmGeofenceEntity.COLUMN_VISIBLE + " = 0 " + " WHERE " + AlarmGeofenceEntity.COLUMN_INTERNAL_ID + " = :internalId")
     int delete(long internalId);
 
 }

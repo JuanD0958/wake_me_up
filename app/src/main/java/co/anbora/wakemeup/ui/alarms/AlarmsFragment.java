@@ -35,12 +35,13 @@ import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.R;
 import co.anbora.wakemeup.Utils;
 import co.anbora.wakemeup.adapter.alarms.AlarmsAdapter;
+import co.anbora.wakemeup.background.shared.preferences.SharedPreferencesManager;
 import co.anbora.wakemeup.databinding.FragmentAlarmsBinding;
 import co.anbora.wakemeup.device.location.CallbackLocation;
 import co.anbora.wakemeup.device.location.LocationSettings;
 import co.anbora.wakemeup.device.location.OnLastLocationListener;
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
-import co.anbora.wakemeup.service.Constants;
+import co.anbora.wakemeup.Constants;
 import co.anbora.wakemeup.ui.addalarm.AddAlarmActivity;
 import co.anbora.wakemeup.util.Utilities;
 import ru.alexbykov.nopermission.PermissionHelper;
@@ -69,6 +70,8 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
     private GoogleMap googleMap;
     private List<Circle> listDrawAlarms;
     private Marker currentMarker;
+
+    private SharedPreferencesManager sharedPreferencesManager;
 
     public AlarmsFragment() {
     }
@@ -99,6 +102,8 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
 
         mMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this);
+
+        sharedPreferencesManager = Injection.provideSharedPreferencesManager(getContext());
     }
 
     private void configureLocationSettings() {
@@ -145,7 +150,7 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
         if (!Utilities.checkPermissions(getActivity())) {
             Utilities.requestPermissions(TAG, getActivity(), R.string.permission_rationale, binding.contentLayout.getRootView());
         } else {
-            Utils.updateGeofencesAdded(getActivity(), status);
+            sharedPreferencesManager.addedGeofence(status);
         }
     }
 
@@ -201,9 +206,13 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
     }
 
     @Override
-    public void showNoAlarms() {
+    public void viewAlarmOnMap(AlarmGeofence alarm) {
 
+        LatLng alarmLocation = new LatLng(alarm.latitude()
+                , alarm.longitude());
+        moveMapToPoint(alarmLocation, this.googleMap);
     }
+
 
     @Override
     public void showAlarms() {
@@ -217,7 +226,7 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
      * user has added geofences.
      */
     private void setButtonsEnabledState() {
-        activateSwitchAlarm(Utils.getGeofencesAdded(getActivity()));
+        activateSwitchAlarm(sharedPreferencesManager.addedGeofence());
     }
 
     private void activateSwitchAlarm(boolean enable) {
@@ -255,7 +264,7 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
                 currentMarker = googleMap.addMarker(new MarkerOptions().position(currentLocation)
                         .title(getString(R.string.current_location)));
 
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
+                moveMapToPoint(currentLocation, googleMap);
             }
 
             @Override
@@ -267,6 +276,10 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
         locationComponent.onLastLocation(callback)
                 .whenLocationChange()
                 .onLocationChanged(callback).attachState().observe(getLifecycle());
+    }
+
+    private void moveMapToPoint(LatLng currentLocation, GoogleMap googleMap) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 17));
     }
 
     private void setupPermissionHelper() {

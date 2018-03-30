@@ -13,4 +13,6 @@ public interface Vibrations {
     void vibrate(int milliseconds);
 
     void vibrate(long[] pattern);
+
+    void cancel();
 }

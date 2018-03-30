@@ -103,7 +103,9 @@ public class AlarmsPresenter implements AlarmsContract.Presenter {
 
     @Override
     public void showAlarm(AlarmGeofence alarm) {
-
+        if (view != null) {
+            this.view.viewAlarmOnMap(alarm);
+        }
     }
 
     @Override

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package co.anbora.wakemeup.service;
+package co.anbora.wakemeup;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -29,9 +29,26 @@ public final class Constants {
     private Constants() {
     }
 
-    private static final String PACKAGE_NAME = "com.google.android.gms.location.Geofence";
+    public static final int NOTIFICATION_ID = 12345678;
+
+    public static final int NOTIFICATION_ALARM_ACTIVE_ID = 998877;
+
+    private static final String PACKAGE_NAME =
+            "co.anbora.wakemeup.service";
+
+    public static final String EXTRA_STARTED_FROM_NOTIFICATION = PACKAGE_NAME +
+            ".started_from_notification";
+
+    public static final String MARK_ALARM_AS_ACTIVE = PACKAGE_NAME +
+            ".mark_alarm_as_active";
+
+    public static final String ACTION_BROADCAST = PACKAGE_NAME + ".broadcast";
+
+    public static final String EXTRA_LOCATION = PACKAGE_NAME + ".location";
 
     public static final String GEOFENCES_ADDED_KEY = PACKAGE_NAME + ".GEOFENCES_ADDED_KEY";
+
+    public static final String KEY_REQUESTING_LOCATION_UPDATES = "requesting_locaction_updates";
 
     /**
      * Used to set an expiration time for a geofence. After this amount of time Location Services
@@ -45,5 +62,7 @@ public final class Constants {
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
     public static final float GEOFENCE_RADIUS_IN_METERS = 100; // 1 mile, 1.6 km
+
+
 
 }

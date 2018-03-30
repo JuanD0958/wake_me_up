@@ -2,32 +2,34 @@ package co.anbora.wakemeup.data.repository.local.db.model;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.provider.BaseColumns;
 
+import co.anbora.wakemeup.domain.model.HistoryAlarm;
+
 /**
  * Created by dalgarins.
  */
-@Entity(tableName = AlarmGeofenceEntity.TABLE_NAME, indices = {
-        @Index(value = AlarmGeofenceEntity.COLUMN_ALARM_ID, unique = true)
-})
-public class AlarmGeofenceEntity {
+@Entity(tableName = HistoryAlarmEntity.TABLE_NAME, indices = {
+        @Index(value = HistoryAlarmEntity.COLUMN_HISTORY_ID, unique = true),
+        @Index(value = HistoryAlarmEntity.COLUMN_ALARM_ID)
+}, foreignKeys = @ForeignKey(entity = AlarmGeofenceEntity.class,
+        parentColumns = AlarmGeofenceEntity.COLUMN_ALARM_ID,
+        childColumns = HistoryAlarmEntity.COLUMN_ALARM_ID
+))
+public class HistoryAlarmEntity {
 
-    public static final String TABLE_NAME = "alarms";
+    public static final String TABLE_NAME = "history_alarms";
     public static final String COLUMN_INTERNAL_ID = BaseColumns._ID;
     public static final String COLUMN_REMOTE_ID = "id_remote";
+    public static final String COLUMN_HISTORY_ID = "id_history";
     public static final String COLUMN_ALARM_ID = "id_alarm";
-    public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_DESCRIPTION = "description";
-    public static final String COLUMN_LATITUDE = "latitude";
-    public static final String COLUMN_LONGITUDE = "longitude";
-    public static final String COLUMN_STATE = "state";
     public static final String COLUMN_CREATE_AT = "create_at";
     public static final String COLUMN_DELETE_AT = "delete_at";
     public static final String COLUMN_UPDATE_AT = "update_at";
     public static final String COLUMN_NEED_SYNC = "need_sync";
-    public static final String COLUMN_VISIBLE = "visible";
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(index = true, name = COLUMN_INTERNAL_ID)
@@ -36,23 +38,11 @@ public class AlarmGeofenceEntity {
     @ColumnInfo(name = COLUMN_REMOTE_ID)
     private Long remoteId;
 
+    @ColumnInfo(name = COLUMN_HISTORY_ID)
+    private String historyId;
+
     @ColumnInfo(name = COLUMN_ALARM_ID)
     private String alarmId;
-
-    @ColumnInfo(name = COLUMN_NAME)
-    private String name;
-
-    @ColumnInfo(name = COLUMN_DESCRIPTION)
-    private String description;
-
-    @ColumnInfo(name = COLUMN_LATITUDE)
-    private Double latitude;
-
-    @ColumnInfo(name = COLUMN_LONGITUDE)
-    private Double longitude;
-
-    @ColumnInfo(name = COLUMN_STATE)
-    private Boolean state;
 
     @ColumnInfo(name = COLUMN_CREATE_AT)
     private Long createdAt;
@@ -65,9 +55,6 @@ public class AlarmGeofenceEntity {
 
     @ColumnInfo(name = COLUMN_NEED_SYNC)
     private Boolean needSync;
-
-    @ColumnInfo(name = COLUMN_VISIBLE)
-    private Boolean visible = true;
 
     public Long getInternalId() {
         return internalId;
@@ -85,36 +72,20 @@ public class AlarmGeofenceEntity {
         this.remoteId = remoteId;
     }
 
+    public String getHistoryId() {
+        return historyId;
+    }
+
+    public void setHistoryId(String historyId) {
+        this.historyId = historyId;
+    }
+
     public String getAlarmId() {
         return alarmId;
     }
 
     public void setAlarmId(String alarmId) {
         this.alarmId = alarmId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean getState() {
-        return state;
-    }
-
-    public void setState(Boolean state) {
-        this.state = state;
     }
 
     public Long getCreatedAt() {
@@ -147,29 +118,5 @@ public class AlarmGeofenceEntity {
 
     public void setNeedSync(Boolean needSync) {
         this.needSync = needSync;
-    }
-
-    public Boolean getVisible() {
-        return visible;
-    }
-
-    public void setVisible(Boolean visible) {
-        this.visible = visible;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
     }
 }

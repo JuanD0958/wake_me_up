@@ -1,16 +1,20 @@
 package co.anbora.wakemeup.data.repository;
 
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
+import co.anbora.wakemeup.domain.model.HistoryAlarm;
 import co.anbora.wakemeup.domain.repository.AlarmGeofenceRepository;
+import co.anbora.wakemeup.domain.repository.HistoryAlarmRepository;
 import co.anbora.wakemeup.domain.repository.Repository;
 
 public class RepositoryImpl implements Repository {
 
     private AlarmGeofenceRepository alarmRepository;
+    private HistoryAlarmRepository historyAlarmRepository;
 
-    public RepositoryImpl(AlarmGeofenceRepository alarmRepository) {
+    public RepositoryImpl(AlarmGeofenceRepository alarmRepository, HistoryAlarmRepository historyAlarmRepository) {
 
         this.alarmRepository = alarmRepository;
+        this.historyAlarmRepository = historyAlarmRepository;
     }
 
     @Override
@@ -35,5 +39,23 @@ public class RepositoryImpl implements Repository {
     public void updateAlarm(AlarmGeofence alarm, Boolean state) {
 
         this.alarmRepository.updateAlarm(alarm, state);
+    }
+
+    @Override
+    public void getHistoryAlarms(LoadHistoryAlarmsCallback callback) {
+
+        this.historyAlarmRepository.getHistoryAlarms(callback);
+    }
+
+    @Override
+    public void getHistoryAlarm(Long internalId, GetHistoryAlarmCallback callback) {
+
+        this.historyAlarmRepository.getHistoryAlarm(internalId, callback);
+    }
+
+    @Override
+    public void saveHistoryAlarm(HistoryAlarm historyAlarm) {
+
+        this.historyAlarmRepository.saveHistoryAlarm(historyAlarm);
     }
 }

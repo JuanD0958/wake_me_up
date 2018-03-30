@@ -1,7 +1,8 @@
-package co.anbora.wakemeup.service;
+package co.anbora.wakemeup.background.service;
 
 import android.location.Location;
 
+import co.anbora.wakemeup.domain.model.AlarmGeofence;
 import co.anbora.wakemeup.ui.BasePresenter;
 import co.anbora.wakemeup.ui.BaseView;
 
@@ -20,6 +21,8 @@ public interface LocationUpdateContract {
     interface Presenter extends BasePresenter {
 
         void calculateLocationDistanceWithAlarms(Location mLocation);
+
+        void saveHistoricalFrom(AlarmGeofence alarmGeofence);
 
     }
 

@@ -16,7 +16,7 @@ public class MapperToAlarmGeofence implements TwoWaysMapper<AlarmGeofenceEntity,
             return null;
         }
         return AlarmGeofenceModel.builder()
-                .internalId(alarmGeofenceEntity.getId())
+                .internalId(alarmGeofenceEntity.getInternalId())
                 .remoteId(alarmGeofenceEntity.getRemoteId())
                 .id(alarmGeofenceEntity.getAlarmId())
                 .name(alarmGeofenceEntity.getName())
@@ -37,7 +37,7 @@ public class MapperToAlarmGeofence implements TwoWaysMapper<AlarmGeofenceEntity,
             return null;
         }
         AlarmGeofenceEntity alarm = new AlarmGeofenceEntity();
-        alarm.setId(map.internalId());
+        alarm.setInternalId(map.internalId());
         alarm.setRemoteId(map.remoteId());
         alarm.setAlarmId(map.id());
         alarm.setName(map.name());

@@ -22,9 +22,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import co.anbora.wakemeup.background.shared.preferences.SharedPreferencesManager;
 import co.anbora.wakemeup.databinding.ActivityMainBinding;
-import co.anbora.wakemeup.service.Constants;
-import co.anbora.wakemeup.service.LocationUpdateService;
+import co.anbora.wakemeup.background.service.LocationUpdateService;
 import co.anbora.wakemeup.ui.alarms.AlarmsFragment;
 import co.anbora.wakemeup.ui.alarms.AlarmsPresenter;
 
@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity
 
     // Tracks the bound state of the service.
     private boolean mBound = false;
+
+    private SharedPreferencesManager sharedPreferencesManager;
 
     // Monitors the state of the connection to the service.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver,
-                new IntentFilter(LocationUpdateService.ACTION_BROADCAST));
+                new IntentFilter(Constants.ACTION_BROADCAST));
     }
 
     @Override
@@ -96,6 +98,7 @@ public class MainActivity extends AppCompatActivity
         setupUX();
         toServiceFragment();
         myReceiver = new MyReceiver();
+
     }
 
     private void setupUI() {
@@ -110,6 +113,7 @@ public class MainActivity extends AppCompatActivity
 
     private void setupUX() {
         binding.navView.setNavigationItemSelectedListener(this);
+        sharedPreferencesManager = Injection.provideSharedPreferencesManager(getApplicationContext());
     }
 
     @Override
@@ -120,13 +124,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
     }
 
     @Override
@@ -150,17 +147,11 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_principal) {
+            toServiceFragment();
+        } else if (id == R.id.nav_history) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_about) {
 
         }
 
@@ -198,7 +189,7 @@ public class MainActivity extends AppCompatActivity
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
 
         if (Constants.GEOFENCES_ADDED_KEY.equals(s)) {
-            if (Utils.getGeofencesAdded(getApplicationContext())){
+            if (sharedPreferencesManager.addedGeofence()){
                 if (mService != null) {
                     mService.requestLocation();
                 }
@@ -216,7 +207,7 @@ public class MainActivity extends AppCompatActivity
     private class MyReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Location location = intent.getParcelableExtra(LocationUpdateService.EXTRA_LOCATION);
+            Location location = intent.getParcelableExtra(Constants.EXTRA_LOCATION);
             if (location != null) {
 
             }

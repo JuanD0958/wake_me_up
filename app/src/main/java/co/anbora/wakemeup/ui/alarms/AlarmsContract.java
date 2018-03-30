@@ -22,7 +22,7 @@ public interface AlarmsContract {
 
         void hideSwipeLayoutLoading();
 
-        void showNoAlarms();
+        void viewAlarmOnMap(AlarmGeofence alarm);
 
         void showAlarms();
     }
