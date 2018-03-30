@@ -53,8 +53,10 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
                         @Override
                         public void onSuccess(GetAlarms.ResponseValues response) {
                             AlarmGeofence alarmActivated = validateAlarms(response, latLngCurrent);
-                            saveHistoricalFrom(alarmActivated);
-                            view.sendNotification(alarmActivated.description());
+                            if (alarmActivated != null) {
+                                saveHistoricalFrom(alarmActivated);
+                                view.sendNotification(alarmActivated.description());
+                            }
                         }
 
                         @Override

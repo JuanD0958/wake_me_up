@@ -16,7 +16,7 @@ import co.anbora.wakemeup.data.repository.local.db.model.HistoryAlarmEntity;
 /**
  * Created by dalgarins.
  */
-@Database(entities = {AlarmGeofenceEntity.class, HistoryAlarmEntity.class}, version = 2, exportSchema = false)
+@Database(entities = {AlarmGeofenceEntity.class, HistoryAlarmEntity.class}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     static final String DATABASE_NAME = "alarm-geofence-db";
@@ -47,7 +47,8 @@ public abstract class AppDatabase extends RoomDatabase {
         if (sInstance == null) {
             sInstance = Room
                     .databaseBuilder(context.getApplicationContext(), AppDatabase.class, DATABASE_NAME)
-                    .addMigrations(MIGRATION_1_2)
+                    //.addMigrations(MIGRATION_1_2)
+                    .fallbackToDestructiveMigration()
                     .build();
         }
         return sInstance;

@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import co.anbora.wakemeup.background.shared.preferences.SharedPreferencesManager;
 import co.anbora.wakemeup.databinding.ActivityMainBinding;
 import co.anbora.wakemeup.background.service.LocationUpdateService;
+import co.anbora.wakemeup.ui.about.AboutFragment;
 import co.anbora.wakemeup.ui.alarms.AlarmsFragment;
 import co.anbora.wakemeup.ui.alarms.AlarmsPresenter;
 
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_history) {
 
         } else if (id == R.id.nav_about) {
-
+            toAboutFragment();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -165,6 +166,11 @@ public class MainActivity extends AppCompatActivity
                 .replace(R.id.content_main, fragment = new AlarmsFragment()).commit();
 
         setupAlarmsUX();
+    }
+
+    public void toAboutFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_main, fragment = new AboutFragment()).commit();
     }
 
     private void setupAlarmsUX() {

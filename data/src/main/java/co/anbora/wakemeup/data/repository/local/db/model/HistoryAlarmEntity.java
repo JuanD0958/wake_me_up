@@ -17,7 +17,8 @@ import co.anbora.wakemeup.domain.model.HistoryAlarm;
         @Index(value = HistoryAlarmEntity.COLUMN_ALARM_ID)
 }, foreignKeys = @ForeignKey(entity = AlarmGeofenceEntity.class,
         parentColumns = AlarmGeofenceEntity.COLUMN_ALARM_ID,
-        childColumns = HistoryAlarmEntity.COLUMN_ALARM_ID
+        childColumns = HistoryAlarmEntity.COLUMN_ALARM_ID,
+        onDelete = ForeignKey.CASCADE
 ))
 public class HistoryAlarmEntity {
 
