@@ -59,11 +59,11 @@ public class NotificationFactoryImpl implements NotificationFactory {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID);
 
         // Define the notification settings.
-        builder.setSmallIcon(R.drawable.ic_launcher_foreground)
+        builder.setSmallIcon(R.drawable.geopoint)
                 // In a real app, you may want to use a library like Volley
                 // to decode the Bitmap.
                 .setLargeIcon(BitmapFactory.decodeResource(resources,
-                        R.drawable.ic_launcher_foreground))
+                        R.drawable.geopoint))
                 .setColor(Color.RED)
                 .setContentTitle(notification.getTitle())
                 .setContentText(notification.getContent())
