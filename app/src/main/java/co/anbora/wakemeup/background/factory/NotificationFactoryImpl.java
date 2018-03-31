@@ -67,8 +67,9 @@ public class NotificationFactoryImpl implements NotificationFactory {
                 .setColor(Color.RED)
                 .setContentTitle(notification.getTitle())
                 .setContentText(notification.getContent())
-                .setContentIntent(notificationPendingIntent)
-                .setVibrate(vibrate);
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setVibrate(vibrate)
+                .addAction(R.drawable.ic_launch, resources.getString(R.string.unable_alarm), notificationPendingIntent);
 
         return builder.build();
     }

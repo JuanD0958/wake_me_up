@@ -2,8 +2,10 @@ package co.anbora.wakemeup.background.service;
 
 import android.app.ActivityManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Binder;
@@ -35,7 +37,7 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
 
     private Handler mServiceHandler;
 
-    private static final int TIME_MILLIS = 400;
+    private static final int TIME_MILLIS = 2000;
 
     private Notifications notifications;
     private SharedPreferencesManager sharedPreferencesManager;
@@ -57,6 +59,10 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
 
     private LocationUpdateContract.Presenter presenter;
 
+    private Vibrations vibrations;
+
+    private BroadcastReceiver disableAlarmBroadCast;
+
     /**
      * The current location.
      */
@@ -68,19 +74,14 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     @Override
     public void onCreate() {
 
-        presenter = new LocationUpdatePresenter(this,
-                Injection.provideUseCaseHandler(),
-                Injection.provideGetAlarms(),
-                Injection.provideCheckAlarmActivated());
-
-        HandlerThread handlerThread = new HandlerThread(TAG);
-        handlerThread.start();
-        mServiceHandler = new Handler(handlerThread.getLooper());
-
-        notifications = Injection.provideNotificationManager(getApplicationContext());
-        sharedPreferencesManager = Injection.provideSharedPreferencesManager(getApplicationContext());
+        initComponents();
+        initLocationComponent();
+        listenBroadCast();
+    }
 
 
+
+    private void initLocationComponent() {
         CallbackLocation callback = new CallbackLocation() {
             @Override
             public void onLocationResult(Location location) {
@@ -103,6 +104,27 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
                 .whenRequestLocation();
 
         requestLocation();
+    }
+
+    private void listenBroadCast() {
+        LocalBroadcastManager.getInstance(this).registerReceiver(disableAlarmBroadCast,
+                new IntentFilter(Constants.ACTION_BROADCAST));
+    }
+
+    private void initComponents() {
+        presenter = new LocationUpdatePresenter(this,
+                Injection.provideUseCaseHandler(),
+                Injection.provideGetAlarms(),
+                Injection.provideCheckAlarmActivated());
+
+        HandlerThread handlerThread = new HandlerThread(TAG);
+        handlerThread.start();
+        mServiceHandler = new Handler(handlerThread.getLooper());
+
+        notifications = Injection.provideNotificationManager(getApplicationContext());
+        sharedPreferencesManager = Injection.provideSharedPreferencesManager(getApplicationContext());
+        vibrations = Injection.provideVibrations(getApplicationContext());
+        disableAlarmBroadCast = Injection.provideDisableAlarmBroadcast(getApplicationContext());
     }
 
     public void requestLocation() {
@@ -190,6 +212,11 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     public void onDestroy() {
 
         mServiceHandler.removeCallbacksAndMessages(null);
+        stopListenBroadCast();
+    }
+
+    private void stopListenBroadCast() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(disableAlarmBroadCast);
     }
 
     @Override
@@ -225,6 +252,7 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
         mLocation = location;
         if (sharedPreferencesManager.addedGeofence()) {
             presenter.calculateLocationDistanceWithAlarms(mLocation);
+
         }
 
         // Notify anyone listening for broadcasts about the new location.

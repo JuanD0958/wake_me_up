@@ -46,6 +46,8 @@ public final class Constants {
 
     public static final String EXTRA_LOCATION = PACKAGE_NAME + ".location";
 
+    public static final String DISABLE_ALARM = PACKAGE_NAME + ".disable";
+
     public static final String GEOFENCES_ADDED_KEY = PACKAGE_NAME + ".GEOFENCES_ADDED_KEY";
 
     public static final String KEY_REQUESTING_LOCATION_UPDATES = "requesting_locaction_updates";

@@ -3,10 +3,12 @@ package co.anbora.wakemeup;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
+import co.anbora.wakemeup.background.DisableAlarmBroadcastReceiver;
 import co.anbora.wakemeup.background.factory.NotificationFactory;
 import co.anbora.wakemeup.background.factory.NotificationFactoryImpl;
 import co.anbora.wakemeup.background.service.LocationUpdateService;
@@ -217,7 +219,7 @@ public class Injection {
 
         return factory.createActiveAlarmNotification(
                 provideNotificationViewModel(title, content),
-                provideNotificationPendingIntent(context), vibrate);
+                provideBroadcastPendingIntent(context), vibrate);
     }
 
     public static Preferences providePreferences(final Context context) {
@@ -232,6 +234,16 @@ public class Injection {
 
     public static Mapper<AlarmGeofence, HistoryAlarm> provideHistoryMapper() {
         return SingletonHelper.MAPPER;
+    }
+
+    public static PendingIntent provideBroadcastPendingIntent(final Context context) {
+        Intent snoozeIntent = new Intent(context, DisableAlarmBroadcastReceiver.class);
+        snoozeIntent.putExtra(Constants.DISABLE_ALARM, true);
+        return PendingIntent.getBroadcast(context, 0, snoozeIntent, 0);
+    }
+
+    public static BroadcastReceiver provideDisableAlarmBroadcast(final Context context) {
+        return new DisableAlarmBroadcastReceiver(provideVibrations(context));
     }
 
 }
