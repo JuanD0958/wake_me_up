@@ -267,11 +267,11 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     @Override
     public void sendNotification(AlarmGeofence alarmGeofence) {
 
-        alarms.create(Injection.provideBroadcastPendingIntent(getApplicationContext(),
+        notifications.showNotification(Constants.NOTIFICATION_ALARM_ACTIVE_ID,
                 Injection.provideNotificationAlarmDetected(alarmGeofence.description(),
-                        getString(R.string.geofence_transition_notification_text),
-                        getApplicationContext(),
-                        getResources())));
+                getString(R.string.geofence_transition_notification_text),
+                getApplicationContext(),
+                getResources()));
 
         vibrations.vibrate(EFFECTS);
     }

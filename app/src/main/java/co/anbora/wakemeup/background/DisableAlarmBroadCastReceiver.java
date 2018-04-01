@@ -11,6 +11,7 @@ import co.anbora.wakemeup.Injection;
 public class DisableAlarmBroadCastReceiver extends BroadcastReceiver {
 
     public DisableAlarmBroadCastReceiver(){
+
         super();
     }
 
