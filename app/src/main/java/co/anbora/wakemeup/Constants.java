@@ -26,6 +26,8 @@ import java.util.HashMap;
 
 public final class Constants {
 
+    public static final String NOTIFICATION = "notification";
+
     private Constants() {
     }
 
@@ -44,9 +46,15 @@ public final class Constants {
 
     public static final String ACTION_BROADCAST = PACKAGE_NAME + ".broadcast";
 
+    public static final String ACTION_BROADCAST_ALARM_ENABLE = PACKAGE_NAME + ".alarm.enable.broadcast";
+
+    public static final String ACTION_BROADCAST_ALARM_DISABLE = PACKAGE_NAME + ".alarm.disable.broadcast";
+
     public static final String EXTRA_LOCATION = PACKAGE_NAME + ".location";
 
     public static final String DISABLE_ALARM = PACKAGE_NAME + ".disable";
+
+    public static final String ACTIVE_ALARM = PACKAGE_NAME + ".active";
 
     public static final String GEOFENCES_ADDED_KEY = PACKAGE_NAME + ".GEOFENCES_ADDED_KEY";
 

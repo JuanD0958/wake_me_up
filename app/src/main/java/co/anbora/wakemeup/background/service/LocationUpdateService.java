@@ -23,13 +23,14 @@ import java.util.Date;
 import co.anbora.wakemeup.Constants;
 import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.R;
-import co.anbora.wakemeup.Utils;
 import co.anbora.wakemeup.background.shared.preferences.SharedPreferencesManager;
+import co.anbora.wakemeup.device.alarm.Alarms;
 import co.anbora.wakemeup.device.location.CallbackLocation;
 import co.anbora.wakemeup.device.location.OnLastLocationListener;
 import co.anbora.wakemeup.device.location.OnLocationRequest;
 import co.anbora.wakemeup.device.notification.Notifications;
 import co.anbora.wakemeup.device.vibration.Vibrations;
+import co.anbora.wakemeup.domain.model.AlarmGeofence;
 
 public class LocationUpdateService extends Service implements LocationUpdateContract.View {
 
@@ -37,10 +38,9 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
 
     private Handler mServiceHandler;
 
-    private static final int TIME_MILLIS = 2000;
-
     private Notifications notifications;
     private SharedPreferencesManager sharedPreferencesManager;
+    private Alarms alarms;
 
     /**
      * Used to check whether the bound activity has really gone away and not unbound as part of an
@@ -61,7 +61,8 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
 
     private Vibrations vibrations;
 
-    private BroadcastReceiver disableAlarmBroadCast;
+
+    private static final long[] EFFECTS = new long[] { 0, 1000, 0, 0, 500, 0, 0, 2000, 0};
 
     /**
      * The current location.
@@ -76,7 +77,6 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
 
         initComponents();
         initLocationComponent();
-        listenBroadCast();
     }
 
 
@@ -106,16 +106,12 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
         requestLocation();
     }
 
-    private void listenBroadCast() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(disableAlarmBroadCast,
-                new IntentFilter(Constants.ACTION_BROADCAST));
-    }
-
     private void initComponents() {
         presenter = new LocationUpdatePresenter(this,
                 Injection.provideUseCaseHandler(),
                 Injection.provideGetAlarms(),
-                Injection.provideCheckAlarmActivated());
+                Injection.provideCheckAlarmActivated(),
+                Injection.provideUpdateStateAlarm());
 
         HandlerThread handlerThread = new HandlerThread(TAG);
         handlerThread.start();
@@ -124,7 +120,7 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
         notifications = Injection.provideNotificationManager(getApplicationContext());
         sharedPreferencesManager = Injection.provideSharedPreferencesManager(getApplicationContext());
         vibrations = Injection.provideVibrations(getApplicationContext());
-        disableAlarmBroadCast = Injection.provideDisableAlarmBroadcast(getApplicationContext());
+        alarms = Injection.provideAlarmManager(getApplicationContext());
     }
 
     public void requestLocation() {
@@ -212,11 +208,6 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     public void onDestroy() {
 
         mServiceHandler.removeCallbacksAndMessages(null);
-        stopListenBroadCast();
-    }
-
-    private void stopListenBroadCast() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(disableAlarmBroadCast);
     }
 
     @Override
@@ -252,7 +243,6 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
         mLocation = location;
         if (sharedPreferencesManager.addedGeofence()) {
             presenter.calculateLocationDistanceWithAlarms(mLocation);
-
         }
 
         // Notify anyone listening for broadcasts about the new location.
@@ -275,12 +265,15 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
      * If the user clicks the notification, control goes to the MainActivity.
      */
     @Override
-    public void sendNotification(String notificationDetails) {
+    public void sendNotification(AlarmGeofence alarmGeofence) {
 
-        notifications.showNotification(Constants.NOTIFICATION_ALARM_ACTIVE_ID, Injection.provideNotificationAlarmDetected(notificationDetails,
-                getString(R.string.geofence_transition_notification_text),
-                getApplicationContext(),
-                getResources(), TIME_MILLIS));
+        alarms.create(Injection.provideBroadcastPendingIntent(getApplicationContext(),
+                Injection.provideNotificationAlarmDetected(alarmGeofence.description(),
+                        getString(R.string.geofence_transition_notification_text),
+                        getApplicationContext(),
+                        getResources())));
+
+        vibrations.vibrate(EFFECTS);
     }
 
     /**

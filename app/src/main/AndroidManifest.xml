@@ -59,6 +59,14 @@
             android:name=".background.service.LocationUpdateService"
             android:enabled="true"
             android:exported="true" />
+
+        <receiver android:name=".background.DisableAlarmBroadCastReceiver">
+            <intent-filter>
+                <action android:name="co.anbora.wakemeup.service.alarm.disable.broadcast" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".ui.notifiedalarm.NotifiedAlarmActivity"></activity>
     </application>
 
 </manifest>

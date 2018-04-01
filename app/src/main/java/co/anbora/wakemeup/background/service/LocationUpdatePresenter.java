@@ -11,6 +11,7 @@ import co.anbora.wakemeup.domain.usecase.UseCase;
 import co.anbora.wakemeup.domain.usecase.UseCaseHandler;
 import co.anbora.wakemeup.domain.usecase.alarm.CheckAlarmAsActivated;
 import co.anbora.wakemeup.domain.usecase.alarm.GetAlarms;
+import co.anbora.wakemeup.domain.usecase.alarm.UpdateStateAlarm;
 
 /**
  * Created by dalgarins on 03/19/18.
@@ -22,16 +23,19 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
     private UseCaseHandler useCaseHandler;
     private GetAlarms getAlarms;
     private CheckAlarmAsActivated checkAlarmAsActivated;
+    private UpdateStateAlarm updateStateAlarm;
 
     public LocationUpdatePresenter(LocationUpdateContract.View view,
                                    UseCaseHandler useCaseHandler,
                                    GetAlarms getAlarms,
-                                   CheckAlarmAsActivated checkAlarmAsActivated){
+                                   CheckAlarmAsActivated checkAlarmAsActivated,
+                                   UpdateStateAlarm updateStateAlarm){
 
         this.view = view;
         this.useCaseHandler = useCaseHandler;
         this.getAlarms = getAlarms;
         this.checkAlarmAsActivated = checkAlarmAsActivated;
+        this.updateStateAlarm = updateStateAlarm;
 
         this.view.setPresenter(this);
     }
@@ -54,8 +58,7 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
                         public void onSuccess(GetAlarms.ResponseValues response) {
                             AlarmGeofence alarmActivated = validateAlarms(response, latLngCurrent);
                             if (alarmActivated != null) {
-                                saveHistoricalFrom(alarmActivated);
-                                view.sendNotification(alarmActivated.description());
+                                disableActivatedAlarm(alarmActivated);
                             }
                         }
 
@@ -70,9 +73,11 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
     private AlarmGeofence validateAlarms(GetAlarms.ResponseValues response, LatLng latLngCurrent) {
         LatLng latLngIterator;
         for (AlarmGeofence geofence: response.getAlarms()) {
-            latLngIterator = new LatLng(geofence.latitude(), geofence.longitude());
-            if (SphericalUtil.computeDistanceBetween(latLngIterator, latLngCurrent) <= Constants.GEOFENCE_RADIUS_IN_METERS) {
-                return geofence;
+            if (geofence.state()) {
+                latLngIterator = new LatLng(geofence.latitude(), geofence.longitude());
+                if (SphericalUtil.computeDistanceBetween(latLngIterator, latLngCurrent) <= Constants.GEOFENCE_RADIUS_IN_METERS) {
+                    return geofence;
+                }
             }
         }
         return null;
@@ -87,7 +92,7 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
                     new UseCase.UseCaseCallback<CheckAlarmAsActivated.ResponseValues>() {
                         @Override
                         public void onSuccess(CheckAlarmAsActivated.ResponseValues response) {
-
+                            view.sendNotification(alarmGeofence);
                         }
 
                         @Override
@@ -95,6 +100,26 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
 
                         }
                     });
+        }
+    }
+
+    @Override
+    public void disableActivatedAlarm(AlarmGeofence alarmGeofence) {
+
+        if (alarmGeofence != null) {
+            this.useCaseHandler.execute(this.updateStateAlarm,
+                    new UpdateStateAlarm.RequestValues(alarmGeofence, false),
+                    new UseCase.UseCaseCallback<UpdateStateAlarm.ResponseValues>() {
+                @Override
+                public void onSuccess(UpdateStateAlarm.ResponseValues response) {
+                    saveHistoricalFrom(alarmGeofence);
+                }
+
+                @Override
+                public void onError() {
+
+                }
+            });
         }
     }
 }

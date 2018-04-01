@@ -42,6 +42,7 @@ public class NotificationFactoryImpl implements NotificationFactory {
                         servicePendingIntent)
                 .setContentText(notification.getContent())
                 .setContentTitle(notification.getTitle())
+                        .setContentIntent(activityPendingIntent)
                 .setOngoing(true)
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -53,7 +54,7 @@ public class NotificationFactoryImpl implements NotificationFactory {
 
     @Override
     public Notification createActiveAlarmNotification(NotificationViewModel notification,
-                                                      PendingIntent notificationPendingIntent, long[] vibrate) {
+                                                      PendingIntent notificationPendingIntent) {
 
         // Get a notification builder that's compatible with platform versions >= 4
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID);
@@ -65,10 +66,11 @@ public class NotificationFactoryImpl implements NotificationFactory {
                 .setLargeIcon(BitmapFactory.decodeResource(resources,
                         R.drawable.geopoint))
                 .setColor(Color.RED)
+                .setAutoCancel(true)
                 .setContentTitle(notification.getTitle())
                 .setContentText(notification.getContent())
+                .setContentIntent(notificationPendingIntent)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setVibrate(vibrate)
                 .addAction(R.drawable.ic_launch, resources.getString(R.string.unable_alarm), notificationPendingIntent);
 
         return builder.build();

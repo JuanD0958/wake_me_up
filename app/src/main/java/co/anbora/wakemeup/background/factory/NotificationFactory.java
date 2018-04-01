@@ -16,7 +16,6 @@ public interface NotificationFactory {
                                                      PendingIntent activityPendingIntent);
 
     Notification createActiveAlarmNotification(NotificationViewModel notification,
-                                               PendingIntent notificationPendingIntent,
-                                               long[] vibrate);
+                                               PendingIntent notificationPendingIntent);
 
 }

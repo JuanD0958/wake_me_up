@@ -35,4 +35,14 @@ public class SharedPreferencesManagerImpl implements SharedPreferencesManager {
     public void setRequestingLocationUpdates(boolean requestingLocationUpdates) {
         this.preferences.setValue(Constants.KEY_REQUESTING_LOCATION_UPDATES, requestingLocationUpdates);
     }
+
+    @Override
+    public boolean activeAlarm() {
+        return this.preferences.getValue(Constants.ACTIVE_ALARM);
+    }
+
+    @Override
+    public void setActiveAlarm(boolean activeAlarm) {
+        this.preferences.setValue(Constants.ACTIVE_ALARM, activeAlarm);
+    }
 }

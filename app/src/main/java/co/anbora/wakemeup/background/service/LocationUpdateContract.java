@@ -14,7 +14,7 @@ public interface LocationUpdateContract {
 
     interface View extends BaseView<LocationUpdateContract.Presenter> {
 
-        void sendNotification(String notificationDetails);
+        void sendNotification(AlarmGeofence notification);
 
     }
 
@@ -23,6 +23,8 @@ public interface LocationUpdateContract {
         void calculateLocationDistanceWithAlarms(Location mLocation);
 
         void saveHistoricalFrom(AlarmGeofence alarmGeofence);
+
+        void disableActivatedAlarm(AlarmGeofence alarmGeofence);
 
     }
 

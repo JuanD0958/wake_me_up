@@ -32,4 +32,15 @@ public interface SharedPreferencesManager {
      */
     void setRequestingLocationUpdates(boolean requestingLocationUpdates);
 
+    /**
+     * Returns true if a alarm was active, otherwise false.
+     */
+    boolean activeAlarm();
+
+    /**
+     * Store the active alarm in SharedPreferences
+     * @param activeAlarm the alarm active
+     */
+    void setActiveAlarm(boolean activeAlarm);
+
 }

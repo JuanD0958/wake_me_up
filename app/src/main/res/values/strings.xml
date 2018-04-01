@@ -47,7 +47,7 @@
     <string name="unknown_geofence_transition">Unknown Transition</string>
 
     <string name="geofence_transition_notification_text">
-        Click notification to return to app
+        Click para desactivar la alarma
     </string>
 
     <string name="insufficient_permissions">Insufficient permissions.</string>

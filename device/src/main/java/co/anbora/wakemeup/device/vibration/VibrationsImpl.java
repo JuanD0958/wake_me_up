@@ -11,7 +11,7 @@ import android.os.Vibrator;
 
 public class VibrationsImpl implements Vibrations {
 
-    private static final int REPEAT = -1;
+    private static final int REPEAT = 0;
 
     private Vibrator vibrator;
 

@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity
         setupUI();
         setupUX();
         toServiceFragment();
+        Injection.provideVibrations(getApplicationContext()).cancel();
         myReceiver = new MyReceiver();
 
     }

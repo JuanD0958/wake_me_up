@@ -8,13 +8,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 
-import co.anbora.wakemeup.background.DisableAlarmBroadcastReceiver;
+import co.anbora.wakemeup.background.DisableAlarmBroadCastReceiver;
 import co.anbora.wakemeup.background.factory.NotificationFactory;
 import co.anbora.wakemeup.background.factory.NotificationFactoryImpl;
 import co.anbora.wakemeup.background.service.LocationUpdateService;
 import co.anbora.wakemeup.background.shared.preferences.SharedPreferencesManager;
 import co.anbora.wakemeup.background.shared.preferences.SharedPreferencesManagerImpl;
 import co.anbora.wakemeup.data.Sdk;
+import co.anbora.wakemeup.device.alarm.Alarms;
+import co.anbora.wakemeup.device.alarm.AlarmsImpl;
 import co.anbora.wakemeup.device.location.LocationComponent;
 import co.anbora.wakemeup.device.location.LocationSettings;
 import co.anbora.wakemeup.device.location.OnLastLocationListener;
@@ -39,6 +41,7 @@ import co.anbora.wakemeup.domain.usecase.alarm.UpdateStateAlarm;
 import co.anbora.wakemeup.executor.MainThreadImpl;
 import co.anbora.wakemeup.mapper.AlarmToHistoryMapper;
 import co.anbora.wakemeup.ui.model.NotificationViewModel;
+import co.anbora.wakemeup.ui.notifiedalarm.NotifiedAlarmActivity;
 
 /**
  * Created by dalgarins on 01/13/18.
@@ -151,6 +154,11 @@ public class Injection {
         return new Intent(context, MainActivity.class);
     }
 
+    public static Intent provideActivityNotifiedIntent(final Context context) {
+
+        return new Intent(context, NotifiedAlarmActivity.class);
+    }
+
     /**
      * The PendingIntent to launch activity.
      * @param context
@@ -198,10 +206,11 @@ public class Injection {
 
     public static PendingIntent provideNotificationPendingIntent(final Context context) {
 
-        TaskStackBuilder stackBuilder = provideTaskStackBuilder(context, provideActivityMainIntent(context));
+        TaskStackBuilder stackBuilder = provideTaskStackBuilder(context, provideActivityNotifiedIntent(context));
         // Get a PendingIntent containing the entire back stack.
         return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
+
 
     /**
      * Provide notification when alarm is active
@@ -213,13 +222,13 @@ public class Injection {
      */
     public static Notification provideNotificationAlarmDetected(String title, String content,
                                                                 final Context context,
-                                                                final Resources resources, long... vibrate){
+                                                                final Resources resources){
 
         NotificationFactory factory = provideNotificationFactory(context, resources);
 
         return factory.createActiveAlarmNotification(
                 provideNotificationViewModel(title, content),
-                provideBroadcastPendingIntent(context), vibrate);
+                provideNotificationPendingIntent(context));
     }
 
     public static Preferences providePreferences(final Context context) {
@@ -236,14 +245,29 @@ public class Injection {
         return SingletonHelper.MAPPER;
     }
 
-    public static PendingIntent provideBroadcastPendingIntent(final Context context) {
-        Intent snoozeIntent = new Intent(context, DisableAlarmBroadcastReceiver.class);
+    public static Intent provideDisableAlarmIntent(Notification notification) {
+
+        Intent snoozeIntent = new Intent(Constants.ACTION_BROADCAST_ALARM_DISABLE);
         snoozeIntent.putExtra(Constants.DISABLE_ALARM, true);
-        return PendingIntent.getBroadcast(context, 0, snoozeIntent, 0);
+        snoozeIntent.putExtra(Constants.NOTIFICATION, notification);
+
+        return snoozeIntent;
     }
 
-    public static BroadcastReceiver provideDisableAlarmBroadcast(final Context context) {
-        return new DisableAlarmBroadcastReceiver(provideVibrations(context));
+    public static PendingIntent provideBroadcastPendingIntent(final Context context, Notification notification) {
+
+        return PendingIntent.getBroadcast(context, 0,
+                provideDisableAlarmIntent(notification),
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    public static BroadcastReceiver provideDisableAlarmBroadcast() {
+        return new DisableAlarmBroadCastReceiver();
+    }
+
+    public static Alarms provideAlarmManager(final Context context) {
+
+        return new AlarmsImpl(context);
     }
 
 }
