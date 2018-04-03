@@ -270,6 +270,7 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
         notifications.showNotification(Constants.NOTIFICATION_ALARM_ACTIVE_ID,
                 Injection.provideNotificationAlarmDetected(alarmGeofence.description(),
                 getString(R.string.geofence_transition_notification_text),
+                alarmGeofence.id(),
                 getApplicationContext(),
                 getResources()));
 

@@ -24,7 +24,7 @@ public interface LocationUpdateContract {
 
         void saveHistoricalFrom(AlarmGeofence alarmGeofence);
 
-        void disableActivatedAlarm(AlarmGeofence alarmGeofence);
+        void disableActivatedAlarm(AlarmGeofence alarmGeofence, Location mLocation);
 
     }
 

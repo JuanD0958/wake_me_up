@@ -6,6 +6,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 
 import co.anbora.wakemeup.Constants;
+import co.anbora.wakemeup.data.repository.model.AlarmGeofenceModel;
+import co.anbora.wakemeup.data.repository.model.HistoryAlarmModel;
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
 import co.anbora.wakemeup.domain.usecase.UseCase;
 import co.anbora.wakemeup.domain.usecase.UseCaseHandler;
@@ -58,7 +60,7 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
                         public void onSuccess(GetAlarms.ResponseValues response) {
                             AlarmGeofence alarmActivated = validateAlarms(response, latLngCurrent);
                             if (alarmActivated != null) {
-                                disableActivatedAlarm(alarmActivated);
+                                disableActivatedAlarm(alarmActivated, mLocation);
                             }
                         }
 
@@ -104,7 +106,7 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
     }
 
     @Override
-    public void disableActivatedAlarm(AlarmGeofence alarmGeofence) {
+    public void disableActivatedAlarm(AlarmGeofence alarmGeofence, Location mLocation) {
 
         if (alarmGeofence != null) {
             this.useCaseHandler.execute(this.updateStateAlarm,
@@ -112,7 +114,11 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
                     new UseCase.UseCaseCallback<UpdateStateAlarm.ResponseValues>() {
                 @Override
                 public void onSuccess(UpdateStateAlarm.ResponseValues response) {
-                    saveHistoricalFrom(alarmGeofence);
+                    saveHistoricalFrom(AlarmGeofenceModel.builder(alarmGeofence)
+                            .latitude(mLocation.getLatitude())
+                            .longitude(mLocation.getLongitude())
+                            .build()
+                    );
                 }
 
                 @Override
