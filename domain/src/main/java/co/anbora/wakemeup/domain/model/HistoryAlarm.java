@@ -8,6 +8,10 @@ public interface HistoryAlarm {
 
     String id();
 
+    Double latitude();
+
+    Double longitude();
+
     String alarmId();
 
     Long createdAt();

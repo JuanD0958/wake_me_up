@@ -16,7 +16,7 @@ import co.anbora.wakemeup.data.repository.local.db.model.HistoryAlarmEntity;
 /**
  * Created by dalgarins.
  */
-@Database(entities = {AlarmGeofenceEntity.class, HistoryAlarmEntity.class}, version = 4, exportSchema = false)
+@Database(entities = {AlarmGeofenceEntity.class, HistoryAlarmEntity.class}, version = 5, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     static final String DATABASE_NAME = "alarm-geofence-db";

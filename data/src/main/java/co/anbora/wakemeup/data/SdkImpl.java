@@ -42,8 +42,8 @@ public class SdkImpl implements Repository {
     }
 
     @Override
-    public void getHistoryAlarm(Long internalId, GetHistoryAlarmCallback callback) {
-        this.repository.getHistoryAlarm(internalId, callback);
+    public void getHistoryAlarm(String alarmId, GetHistoryAlarmCallback callback) {
+        this.repository.getHistoryAlarm(alarmId, callback);
     }
 
     @Override

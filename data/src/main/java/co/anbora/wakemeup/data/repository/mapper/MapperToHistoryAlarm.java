@@ -19,6 +19,8 @@ public class MapperToHistoryAlarm implements TwoWaysMapper<HistoryAlarmEntity, H
         entity.setInternalId(map.internalId());
         entity.setRemoteId(map.remoteId());
         entity.setHistoryId(map.id());
+        entity.setLatitude(map.latitude());
+        entity.setLongitude(map.longitude());
         entity.setAlarmId(map.alarmId());
         entity.setCreatedAt(map.createdAt());
         entity.setDeletedAt(map.deletedAt());
@@ -36,6 +38,8 @@ public class MapperToHistoryAlarm implements TwoWaysMapper<HistoryAlarmEntity, H
                 .internalId(historyAlarmEntity.getInternalId())
                 .remoteId(historyAlarmEntity.getRemoteId())
                 .id(historyAlarmEntity.getHistoryId())
+                .latitude(historyAlarmEntity.getLatitude())
+                .longitude(historyAlarmEntity.getLongitude())
                 .alarmId(historyAlarmEntity.getAlarmId())
                 .createdAt(historyAlarmEntity.getCreatedAt())
                 .deletedAt(historyAlarmEntity.getDeletedAt())

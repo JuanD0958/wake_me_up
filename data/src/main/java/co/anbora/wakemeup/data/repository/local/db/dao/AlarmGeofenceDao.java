@@ -26,11 +26,11 @@ public interface AlarmGeofenceDao {
     /**
      * Select a alarm by the ID.
      *
-     * @param internalId The row ID.
+     * @param alarmId The row ID.
      * @return A {@link AlarmGeofenceEntity} of the selected alarm.
      */
-    @Query("SELECT * FROM " + AlarmGeofenceEntity.TABLE_NAME + " WHERE " + AlarmGeofenceEntity.COLUMN_INTERNAL_ID + " = :internalId")
-    AlarmGeofenceEntity selectById(long internalId);
+    @Query("SELECT * FROM " + AlarmGeofenceEntity.TABLE_NAME + " WHERE " + AlarmGeofenceEntity.COLUMN_ALARM_ID + " = :alarmId")
+    AlarmGeofenceEntity selectById(String alarmId);
 
     /**
      * Inserts a alarm into the table.

@@ -26,6 +26,8 @@ public class HistoryAlarmEntity {
     public static final String COLUMN_INTERNAL_ID = BaseColumns._ID;
     public static final String COLUMN_REMOTE_ID = "id_remote";
     public static final String COLUMN_HISTORY_ID = "id_history";
+    public static final String COLUMN_LATITUDE = "latitude";
+    public static final String COLUMN_LONGITUDE = "longitude";
     public static final String COLUMN_ALARM_ID = "id_alarm";
     public static final String COLUMN_CREATE_AT = "create_at";
     public static final String COLUMN_DELETE_AT = "delete_at";
@@ -41,6 +43,12 @@ public class HistoryAlarmEntity {
 
     @ColumnInfo(name = COLUMN_HISTORY_ID)
     private String historyId;
+
+    @ColumnInfo(name = COLUMN_LATITUDE)
+    private Double latitude;
+
+    @ColumnInfo(name = COLUMN_LONGITUDE)
+    private Double longitude;
 
     @ColumnInfo(name = COLUMN_ALARM_ID)
     private String alarmId;
@@ -79,6 +87,22 @@ public class HistoryAlarmEntity {
 
     public void setHistoryId(String historyId) {
         this.historyId = historyId;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public String getAlarmId() {

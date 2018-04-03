@@ -23,6 +23,12 @@ public abstract class HistoryAlarmModel implements HistoryAlarm {
     public abstract String id();
 
     @NonNull
+    public abstract Double latitude();
+
+    @NonNull
+    public abstract Double longitude();
+
+    @NonNull
     public abstract String alarmId();
 
     @NonNull
@@ -47,6 +53,8 @@ public abstract class HistoryAlarmModel implements HistoryAlarm {
                 .internalId(historyAlarm.internalId())
                 .remoteId(historyAlarm.remoteId())
                 .id(historyAlarm.id())
+                .latitude(historyAlarm.latitude())
+                .longitude(historyAlarm.longitude())
                 .alarmId(historyAlarm.alarmId())
                 .createdAt(historyAlarm.createdAt())
                 .updatedAt(historyAlarm.updatedAt())
@@ -77,6 +85,12 @@ public abstract class HistoryAlarmModel implements HistoryAlarm {
 
         @NonNull
         public abstract Builder id(@NonNull String state);
+
+        @NonNull
+        public abstract Builder latitude(@NonNull Double latitude);
+
+        @NonNull
+        public abstract Builder longitude(@NonNull Double longitude);
 
         @NonNull
         public abstract Builder alarmId(@NonNull String alarmId);

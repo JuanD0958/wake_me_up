@@ -32,10 +32,10 @@ public class HistoryAlarmRepositoryImpl implements HistoryAlarmRepository {
     }
 
     @Override
-    public void getHistoryAlarm(Long internalId, GetHistoryAlarmCallback callback) {
+    public void getHistoryAlarm(String alarmId, GetHistoryAlarmCallback callback) {
 
         callback.onHistoryAlarmLoaded(mapper.apply(this.historyAlarmDao
-                .selectById(internalId)));
+                .selectById(alarmId)));
     }
 
     @Override

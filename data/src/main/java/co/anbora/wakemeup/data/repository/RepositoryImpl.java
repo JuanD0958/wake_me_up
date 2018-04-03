@@ -48,9 +48,9 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public void getHistoryAlarm(Long internalId, GetHistoryAlarmCallback callback) {
+    public void getHistoryAlarm(String alarmId, GetHistoryAlarmCallback callback) {
 
-        this.historyAlarmRepository.getHistoryAlarm(internalId, callback);
+        this.historyAlarmRepository.getHistoryAlarm(alarmId, callback);
     }
 
     @Override

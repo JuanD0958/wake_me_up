@@ -18,6 +18,8 @@ public class AlarmToHistoryMapper implements Mapper<AlarmGeofence, HistoryAlarm>
         return HistoryAlarmModel.builder()
                 .id(UUID.randomUUID().toString())
                 .alarmId(alarmGeofence.id())
+                .latitude(alarmGeofence.latitude())
+                .longitude(alarmGeofence.longitude())
                 .createdAt(new Date().getTime())
                 .needSync(true)
                 .build();

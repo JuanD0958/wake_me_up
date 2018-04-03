@@ -154,9 +154,11 @@ public class Injection {
         return new Intent(context, MainActivity.class);
     }
 
-    public static Intent provideActivityNotifiedIntent(final Context context) {
+    public static Intent provideActivityNotifiedIntent(final Context context, String alarmId) {
 
-        return new Intent(context, NotifiedAlarmActivity.class);
+        Intent intent = new Intent(context, NotifiedAlarmActivity.class);
+        intent.putExtra(Constants.ACTIVE_ALARM, alarmId);
+        return intent;
     }
 
     /**
@@ -204,9 +206,9 @@ public class Injection {
         return stackBuilder;
     }
 
-    public static PendingIntent provideNotificationPendingIntent(final Context context) {
+    public static PendingIntent provideNotificationPendingIntent(final Context context, String alarmId) {
 
-        TaskStackBuilder stackBuilder = provideTaskStackBuilder(context, provideActivityNotifiedIntent(context));
+        TaskStackBuilder stackBuilder = provideTaskStackBuilder(context, provideActivityNotifiedIntent(context, alarmId));
         // Get a PendingIntent containing the entire back stack.
         return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -221,6 +223,7 @@ public class Injection {
      * @return
      */
     public static Notification provideNotificationAlarmDetected(String title, String content,
+                                                                String alarmId,
                                                                 final Context context,
                                                                 final Resources resources){
 
@@ -228,7 +231,7 @@ public class Injection {
 
         return factory.createActiveAlarmNotification(
                 provideNotificationViewModel(title, content),
-                provideNotificationPendingIntent(context));
+                provideNotificationPendingIntent(context, alarmId));
     }
 
     public static Preferences providePreferences(final Context context) {

@@ -22,7 +22,7 @@ public interface HistoryAlarmRepository {
 
     void getHistoryAlarms(LoadHistoryAlarmsCallback callback);
 
-    void getHistoryAlarm(Long internalId, GetHistoryAlarmCallback callback);
+    void getHistoryAlarm(String alarmId, GetHistoryAlarmCallback callback);
 
     void saveHistoryAlarm(HistoryAlarm historyAlarm);
 
