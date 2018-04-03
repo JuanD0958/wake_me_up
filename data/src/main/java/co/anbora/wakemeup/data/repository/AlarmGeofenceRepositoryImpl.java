@@ -21,6 +21,13 @@ public class AlarmGeofenceRepositoryImpl implements AlarmGeofenceRepository {
     }
 
     @Override
+    public void getAlarm(String alarmId, GetAlarmCallback callback) {
+
+        AlarmGeofence alarm = mapperToAlarmGeofence.apply(this.alarmDao.selectById(alarmId));
+        callback.onAlarmLoaded(alarm);
+    }
+
+    @Override
     public void getAlarms(LoadAlarmsCallback callback) {
 
         List<AlarmGeofence> alarms = alarmDao.selectAll()

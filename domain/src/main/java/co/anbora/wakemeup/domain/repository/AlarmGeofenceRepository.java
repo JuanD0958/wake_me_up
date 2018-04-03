@@ -16,6 +16,15 @@ public interface AlarmGeofenceRepository {
         void onDataNotAvailable();
     }
 
+    interface GetAlarmCallback {
+
+        void onAlarmLoaded(AlarmGeofence task);
+
+        void onDataNotAvailable();
+    }
+
+    void getAlarm(String alarmId, GetAlarmCallback callback);
+
     void getAlarms(LoadAlarmsCallback callback);
 
     void saveAlarm(AlarmGeofence alarm);

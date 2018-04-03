@@ -18,6 +18,12 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
+    public void getAlarm(String alarmId, GetAlarmCallback callback) {
+
+        this.alarmRepository.getAlarm(alarmId, callback);
+    }
+
+    @Override
     public void getAlarms(LoadAlarmsCallback callback) {
 
         this.alarmRepository.getAlarms(callback);
