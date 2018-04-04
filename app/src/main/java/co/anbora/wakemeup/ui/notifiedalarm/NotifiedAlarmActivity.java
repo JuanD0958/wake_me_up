@@ -12,8 +12,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.R;
+import co.anbora.wakemeup.domain.model.AlarmAndLastPoint;
+import co.anbora.wakemeup.domain.model.AlarmGeofence;
+import co.anbora.wakemeup.domain.model.HistoryAlarm;
 
-public class NotifiedAlarmActivity extends FragmentActivity implements OnMapReadyCallback {
+public class NotifiedAlarmActivity extends FragmentActivity
+        implements NotifiedAlarmContract.View, OnMapReadyCallback {
 
     private GoogleMap mMap;
 
@@ -47,5 +51,17 @@ public class NotifiedAlarmActivity extends FragmentActivity implements OnMapRead
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+
+
+    @Override
+    public void setPresenter(NotifiedAlarmContract.Presenter presenter) {
+
+    }
+
+    @Override
+    public void viewAlarmAndLastPointOnMap(AlarmAndLastPoint alarm) {
+
     }
 }
