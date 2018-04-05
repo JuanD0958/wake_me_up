@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
 import co.anbora.wakemeup.domain.model.HistoryAlarm;
+import co.anbora.wakemeup.domain.repository.AlarmGeofenceRepository;
 import co.anbora.wakemeup.domain.repository.HistoryAlarmRepository;
 import co.anbora.wakemeup.domain.repository.Repository;
 
@@ -14,6 +15,11 @@ public class SdkImpl implements Repository {
 
     protected SdkImpl(@NonNull Context context){
         this.repository = Injection.provideRepository(context);
+    }
+
+    @Override
+    public void getAlarm(String alarmId, GetAlarmCallback callback) {
+        this.repository.getAlarm(alarmId, callback);
     }
 
     @Override
