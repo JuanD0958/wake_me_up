@@ -1,5 +1,8 @@
 package co.anbora.wakemeup.ui.notifiedalarm;
 
+import co.anbora.wakemeup.data.repository.model.AlarmAndLastPointModel;
+import co.anbora.wakemeup.data.repository.model.AlarmGeofenceModel;
+import co.anbora.wakemeup.domain.model.AlarmGeofence;
 import co.anbora.wakemeup.domain.usecase.UseCase;
 import co.anbora.wakemeup.domain.usecase.UseCaseHandler;
 import co.anbora.wakemeup.domain.usecase.alarm.GetAlarmById;
@@ -31,13 +34,40 @@ public class NotifiedAlarmPresenter implements NotifiedAlarmContract.Presenter {
     @Override
     public void showGeneratedAlarm(String alarmId) {
 
+        getLastAlarmActive(alarmId);
+    }
+
+    private void getLastAlarmActive(String alarmId) {
+
         this.useCaseHandler.execute(getAlarmById,
                 new GetAlarmById.RequestValues(alarmId),
                 new UseCase.UseCaseCallback<GetAlarmById.ResponseValues>() {
+                    @Override
+                    public void onSuccess(GetAlarmById.ResponseValues response) {
+
+                        getPositionWhenActiveAlarm(response.getAlarm());
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
+    }
+
+    private void getPositionWhenActiveAlarm(AlarmGeofence alarmGeofence) {
+
+        this.useCaseHandler.execute(getLastAlarmActive,
+                new GetLastAlarmActive.RequestValues(alarmGeofence.id()),
+                new UseCase.UseCaseCallback<GetLastAlarmActive.ResponseValues>() {
             @Override
-            public void onSuccess(GetAlarmById.ResponseValues response) {
+            public void onSuccess(GetLastAlarmActive.ResponseValues response) {
 
-
+                view.viewAlarmAndLastPointOnMap(AlarmAndLastPointModel.builder()
+                        .alarm(alarmGeofence)
+                        .lastPoint(response.getLastActivatedAlarm())
+                        .build()
+                );
             }
 
             @Override

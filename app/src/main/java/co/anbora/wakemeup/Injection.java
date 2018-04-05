@@ -36,8 +36,10 @@ import co.anbora.wakemeup.domain.usecase.UseCaseUiThreadPool;
 import co.anbora.wakemeup.domain.usecase.alarm.AddAlarm;
 import co.anbora.wakemeup.domain.usecase.alarm.CheckAlarmAsActivated;
 import co.anbora.wakemeup.domain.usecase.alarm.DeleteAlarm;
+import co.anbora.wakemeup.domain.usecase.alarm.GetAlarmById;
 import co.anbora.wakemeup.domain.usecase.alarm.GetAlarms;
 import co.anbora.wakemeup.domain.usecase.alarm.UpdateStateAlarm;
+import co.anbora.wakemeup.domain.usecase.history.GetLastAlarmActive;
 import co.anbora.wakemeup.executor.MainThreadImpl;
 import co.anbora.wakemeup.mapper.AlarmToHistoryMapper;
 import co.anbora.wakemeup.ui.model.NotificationViewModel;
@@ -81,6 +83,14 @@ public class Injection {
 
     public static GetAlarms provideGetAlarms() {
         return new GetAlarms(provideRepository());
+    }
+
+    public static GetAlarmById provideGetAlarmById() {
+        return new GetAlarmById(provideRepository());
+    }
+
+    public static GetLastAlarmActive provideGetLastAlarmActive() {
+        return new GetLastAlarmActive(provideHistoryRepository());
     }
 
     public static UpdateStateAlarm provideUpdateStateAlarm() {

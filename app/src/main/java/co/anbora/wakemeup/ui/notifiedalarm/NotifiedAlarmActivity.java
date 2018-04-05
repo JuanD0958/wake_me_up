@@ -7,9 +7,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import co.anbora.wakemeup.Constants;
 import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.R;
 import co.anbora.wakemeup.domain.model.AlarmAndLastPoint;
@@ -20,11 +22,24 @@ public class NotifiedAlarmActivity extends FragmentActivity
         implements NotifiedAlarmContract.View, OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private NotifiedAlarmContract.Presenter presenter;
+    private String alarmId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notified_alarm);
+
+        new NotifiedAlarmPresenter(Injection.provideUseCaseHandler(),
+                this,
+                Injection.provideGetAlarmById(),
+                Injection.provideGetLastAlarmActive()
+        );
+
+        if (savedInstanceState.getString(Constants.ACTIVE_ALARM) != null) {
+            alarmId = savedInstanceState.getString(Constants.ACTIVE_ALARM);
+        }
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -51,17 +66,35 @@ public class NotifiedAlarmActivity extends FragmentActivity
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        if (alarmId != null) {
+            presenter.showGeneratedAlarm(alarmId);
+        }
     }
 
 
 
     @Override
     public void setPresenter(NotifiedAlarmContract.Presenter presenter) {
-
+        this.presenter = presenter;
     }
 
     @Override
     public void viewAlarmAndLastPointOnMap(AlarmAndLastPoint alarm) {
 
+        addLastPointMark(alarm);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(AddAlarmMark(alarm), 17));
+    }
+
+    private LatLng AddAlarmMark(AlarmAndLastPoint alarm) {
+        LatLng positionAlarm = new LatLng(alarm.alarm().latitude(), alarm.alarm().longitude());
+        mMap.addCircle(new CircleOptions().radius(Constants.GEOFENCE_RADIUS_IN_METERS)
+                .center(positionAlarm));
+        return positionAlarm;
+    }
+
+    private void addLastPointMark(AlarmAndLastPoint alarm) {
+        LatLng position = new LatLng(alarm.lastPoint().latitude(), alarm.lastPoint().longitude());
+        mMap.addMarker(new MarkerOptions().position(position).title(getResources().getString(R.string.place_active)));
     }
 }
