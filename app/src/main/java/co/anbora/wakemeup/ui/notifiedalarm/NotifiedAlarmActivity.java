@@ -1,7 +1,8 @@
 package co.anbora.wakemeup.ui.notifiedalarm;
 
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBar;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -15,8 +16,6 @@ import co.anbora.wakemeup.Constants;
 import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.R;
 import co.anbora.wakemeup.domain.model.AlarmAndLastPoint;
-import co.anbora.wakemeup.domain.model.AlarmGeofence;
-import co.anbora.wakemeup.domain.model.HistoryAlarm;
 
 public class NotifiedAlarmActivity extends FragmentActivity
         implements NotifiedAlarmContract.View, OnMapReadyCallback {
@@ -28,24 +27,32 @@ public class NotifiedAlarmActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notified_alarm);
+        setUpUI();
+        setUpUX();
+    }
 
+    private void setUpUX() {
         new NotifiedAlarmPresenter(Injection.provideUseCaseHandler(),
                 this,
                 Injection.provideGetAlarmById(),
                 Injection.provideGetLastAlarmActive()
         );
 
-        if (savedInstanceState.getString(Constants.ACTIVE_ALARM) != null) {
-            alarmId = savedInstanceState.getString(Constants.ACTIVE_ALARM);
+        Bundle bundle = getIntent().getExtras();
+        if (bundle.getString(Constants.ACTIVE_ALARM) != null) {
+            alarmId = bundle.getString(Constants.ACTIVE_ALARM);
         }
+
+        Injection.provideVibrations(getApplicationContext()).cancel();
+    }
+
+    private void setUpUI() {
+        setContentView(R.layout.activity_notified_alarm);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        Injection.provideVibrations(getApplicationContext()).cancel();
     }
 
 

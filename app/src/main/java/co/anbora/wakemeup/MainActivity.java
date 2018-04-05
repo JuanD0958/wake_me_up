@@ -28,6 +28,7 @@ import co.anbora.wakemeup.background.service.LocationUpdateService;
 import co.anbora.wakemeup.ui.about.AboutFragment;
 import co.anbora.wakemeup.ui.alarms.AlarmsFragment;
 import co.anbora.wakemeup.ui.alarms.AlarmsPresenter;
+import co.anbora.wakemeup.ui.settings.SettingsActivity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
@@ -129,6 +130,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -137,6 +146,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 

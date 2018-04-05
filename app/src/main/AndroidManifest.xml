@@ -63,10 +63,12 @@
         <activity
             android:name=".ui.notifiedalarm.NotifiedAlarmActivity"
             android:label="@string/title_activity_notified_alarm"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/Theme.AppCompat.Light" />
+
         <activity
             android:name=".ui.settings.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>
