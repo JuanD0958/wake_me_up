@@ -3,6 +3,7 @@ package co.anbora.wakemeup.ui.notifiedalarm;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,7 +18,7 @@ import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.R;
 import co.anbora.wakemeup.domain.model.AlarmAndLastPoint;
 
-public class NotifiedAlarmActivity extends FragmentActivity
+public class NotifiedAlarmActivity extends AppCompatActivity
         implements NotifiedAlarmContract.View, OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -53,6 +54,8 @@ public class NotifiedAlarmActivity extends FragmentActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
     }
 
 
@@ -68,11 +71,6 @@ public class NotifiedAlarmActivity extends FragmentActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         if (alarmId != null) {
             presenter.showGeneratedAlarm(alarmId);
