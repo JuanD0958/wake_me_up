@@ -19,7 +19,7 @@
     <string name="author">Anbora labs</string>
     <string name="country">Colombia</string>
     <string name="fork_on_github">Fork on Github</string>
-    <string name="anbora_email">anbora@gmail.com</string>
+    <string name="anbora_email">anboralabs@gmail.com</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -155,5 +155,47 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+
+    <!-- Preferences categories General -->
+    <string name="pref_title_general">General</string>
+
+    <string name="pref_general_name_default_value">Anbora Labs</string>
+    <string name="pref_general_name_key">name</string>
+    <string name="pref_general_name_title">Nombre</string>
+
+    <string name="pref_general_email_default_value">anboralabs@gmail.com</string>
+    <string name="pref_general_email_key">email</string>
+    <string name="pref_general_email_title">Correo electronico</string>
+
+    <!-- Preferences categories Alarmas -->
+    <string name="pref_title_alarm">Alarmas</string>
+
+    <string name="pref_alarm_time_dialog_title">Tiempo de actulizacion GPS</string>
+    <string name="pref_alarm_time_key">time_key_alarm</string>
+    <string name="pref_alarm_time_title">Tiempo para localizacion GPS</string>
+    <string name="pref_alarm_time_summary">Intervalo de tiempo para actualizar GPS</string>
+
+    <string name="pref_alarm_area_dialog_title">Area de las alarmas</string>
+    <string name="pref_alarm_area_key">area_key_alarm</string>
+    <string name="pref_alarm_area_title">Area de las alarmas</string>
+    <string name="pref_alarm_area_summary">Area para la creacion de alarmas</string>
+
+    <!-- Preferences categories Notification -->
+    <string name="pref_title_notification">Notificaciones</string>
+
+    <string name="pref_notification_key">notifications</string>
+    <string name="pref_notification_title">Ver notificaciones</string>
+
+    <string name="pref_notification_sound">Timbre</string>
+    <string name="pref_notification_sound_key">sound</string>
+    <string name="pref_notification_sound_summary">Elige tu timbre</string>
+
+    <string name="pref_notification_vibrate_title">Vibrar</string>
+    <string name="pref_notification_vibrate_key">vibrate</string>
+    <string name="pref_notification_vibrate_summary">Vibrate con nuevas notificaciones</string>
+    <string name="notifications_new_message">notifications_new_message</string>
+
+
+
 
 </resources>
