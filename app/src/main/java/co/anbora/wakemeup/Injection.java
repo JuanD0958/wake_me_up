@@ -39,6 +39,7 @@ import co.anbora.wakemeup.domain.usecase.alarm.DeleteAlarm;
 import co.anbora.wakemeup.domain.usecase.alarm.GetAlarmById;
 import co.anbora.wakemeup.domain.usecase.alarm.GetAlarms;
 import co.anbora.wakemeup.domain.usecase.alarm.UpdateStateAlarm;
+import co.anbora.wakemeup.domain.usecase.history.GetHistoryAlarms;
 import co.anbora.wakemeup.domain.usecase.history.GetLastAlarmActive;
 import co.anbora.wakemeup.executor.MainThreadImpl;
 import co.anbora.wakemeup.mapper.AlarmToHistoryMapper;
@@ -99,6 +100,10 @@ public class Injection {
 
     public static CheckAlarmAsActivated provideCheckAlarmActivated() {
         return new CheckAlarmAsActivated(provideHistoryRepository(), provideHistoryMapper());
+    }
+
+    public static GetHistoryAlarms provideGetHistoryAlarms() {
+        return new GetHistoryAlarms(provideHistoryRepository());
     }
 
     public static Notifications provideNotificationManager(Context context){

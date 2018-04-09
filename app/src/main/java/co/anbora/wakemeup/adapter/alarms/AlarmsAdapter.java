@@ -21,10 +21,16 @@ public class AlarmsAdapter extends RecyclerView.Adapter<AlarmsAdapter.AlarmViewH
 
     private List<AlarmGeofence> alarms;
     private final AlarmsContract.Presenter presenter;
+    private boolean canModify = true;
 
     public AlarmsAdapter(List<AlarmGeofence> alarms, AlarmsContract.Presenter presenter) {
         this.alarms = alarms;
         this.presenter = presenter;
+    }
+
+    public AlarmsAdapter(List<AlarmGeofence> alarms, AlarmsContract.Presenter presenter, boolean canModify) {
+        this(alarms, presenter);
+        this.canModify = canModify;
     }
 
     public void setList(List<AlarmGeofence> alarms) {
@@ -67,6 +73,10 @@ public class AlarmsAdapter extends RecyclerView.Adapter<AlarmsAdapter.AlarmViewH
         void bind(@NonNull AlarmGeofence alarm) {
             binding.setAlarm(alarm);
             binding.executePendingBindings();
+            if (!canModify) {
+                binding.swEnable.setVisibility(View.GONE);
+                binding.ivDelete.setVisibility(View.GONE);
+            }
             binding.swEnable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

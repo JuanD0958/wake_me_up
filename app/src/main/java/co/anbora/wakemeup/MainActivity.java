@@ -28,6 +28,8 @@ import co.anbora.wakemeup.background.service.LocationUpdateService;
 import co.anbora.wakemeup.ui.about.AboutFragment;
 import co.anbora.wakemeup.ui.alarms.AlarmsFragment;
 import co.anbora.wakemeup.ui.alarms.AlarmsPresenter;
+import co.anbora.wakemeup.ui.history.HistoryFragment;
+import co.anbora.wakemeup.ui.history.HistoryPresenter;
 import co.anbora.wakemeup.ui.settings.SettingsActivity;
 
 public class MainActivity extends AppCompatActivity
@@ -163,7 +165,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_principal) {
             toServiceFragment();
         } else if (id == R.id.nav_history) {
-
+            toHistoryFragment();
         } else if (id == R.id.nav_about) {
             toAboutFragment();
         }
@@ -180,6 +182,13 @@ public class MainActivity extends AppCompatActivity
         setupAlarmsUX();
     }
 
+    public void toHistoryFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_main, fragment = new HistoryFragment()).commit();
+
+        setupHistoryUx();
+    }
+
     public void toAboutFragment() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_main, fragment = new AboutFragment()).commit();
@@ -193,6 +202,13 @@ public class MainActivity extends AppCompatActivity
                 Injection.provideDeleteAlarm(),
                 Injection.provideGetAlarms(),
                 Injection.provideUpdateStateAlarm()
+        );
+    }
+
+    private void setupHistoryUx() {
+        new HistoryPresenter(Injection.provideUseCaseHandler(),
+                ((HistoryFragment) fragment),
+                Injection.provideGetHistoryAlarms()
         );
     }
 
