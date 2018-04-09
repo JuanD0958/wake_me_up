@@ -7,6 +7,7 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
+import co.anbora.wakemeup.data.repository.local.db.model.AlarmGeofenceEntity;
 import co.anbora.wakemeup.data.repository.local.db.model.HistoryAlarmEntity;
 
 /**
@@ -22,6 +23,21 @@ public interface HistoryAlarmDao {
      */
     @Query("SELECT * FROM " + HistoryAlarmEntity.TABLE_NAME + " LIMIT 20 ")
     List<HistoryAlarmEntity> selectAll();
+
+    /**
+     * Select all history alarms geofence with the last point to occurred.
+     *
+     * @return A {@link List} of all the history alarms in the table.
+     */
+    @Query("SELECT " + AlarmGeofenceEntity.TABLE_NAME + ".*"
+            + " FROM " + HistoryAlarmEntity.TABLE_NAME
+            + " INNER JOIN " + AlarmGeofenceEntity.TABLE_NAME
+            + " ON "
+            + HistoryAlarmEntity.TABLE_NAME + "." + HistoryAlarmEntity.COLUMN_ALARM_ID
+            + " = "
+            + AlarmGeofenceEntity.TABLE_NAME + "." + AlarmGeofenceEntity.COLUMN_ALARM_ID
+            + " LIMIT 20 ")
+    List<AlarmGeofenceEntity> selectAllHistory();
 
     /**
      * Select a alarm by the ID.

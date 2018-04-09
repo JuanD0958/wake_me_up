@@ -2,6 +2,7 @@ package co.anbora.wakemeup.domain.usecase.history;
 
 import java.util.List;
 
+import co.anbora.wakemeup.domain.model.AlarmGeofence;
 import co.anbora.wakemeup.domain.model.HistoryAlarm;
 import co.anbora.wakemeup.domain.repository.HistoryAlarmRepository;
 import co.anbora.wakemeup.domain.usecase.UseCase;
@@ -17,15 +18,15 @@ public class GetHistoryAlarms extends UseCase <GetHistoryAlarms.RequestValues, G
     @Override
     protected void executeUseCase(RequestValues requestValues) {
 
-        this.historyAlarmRepository.getHistoryAlarms(new HistoryAlarmRepository.LoadHistoryAlarmsCallback() {
+        this.historyAlarmRepository.getHistoryLastPointsAlarms(new HistoryAlarmRepository.LoadLastPointAlarmsCallback() {
             @Override
-            public void onHistoryAlarmsLoaded(List<HistoryAlarm> alarms) {
+            public void onHistoryLastPointsLoaded(List<AlarmGeofence> alarms) {
                 getUseCaseCallback().onSuccess(new ResponseValues(alarms));
             }
 
             @Override
             public void onDataNotAvailable() {
-                getUseCaseCallback().onError();
+
             }
         });
 
@@ -37,13 +38,13 @@ public class GetHistoryAlarms extends UseCase <GetHistoryAlarms.RequestValues, G
 
     public static final class ResponseValues implements UseCase.ResponseValue {
 
-        private final List<HistoryAlarm> alarms;
+        private final List<AlarmGeofence> alarms;
 
-        public ResponseValues(List<HistoryAlarm> alarms) {
+        public ResponseValues(List<AlarmGeofence> alarms) {
             this.alarms = alarms;
         }
 
-        public List<HistoryAlarm> getAlarms() {
+        public List<AlarmGeofence> getAlarms() {
             return alarms;
         }
     }

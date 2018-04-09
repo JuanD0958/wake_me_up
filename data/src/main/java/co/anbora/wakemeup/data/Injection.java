@@ -46,7 +46,7 @@ class Injection {
 
     private static HistoryAlarmRepository provideHistoryAlarmRepository(Context context) {
         return new HistoryAlarmRepositoryImpl(provideHistoryAlarmDao(context),
-                SINGLETON_HELPER.MAPPER_TO_HISTORY_ALARM);
+                SINGLETON_HELPER.MAPPER_TO_HISTORY_ALARM, SINGLETON_HELPER.MAPPER_TO_ALARM_GEOFENCE);
     }
 
     private static HistoryAlarmDao provideHistoryAlarmDao(Context context) {

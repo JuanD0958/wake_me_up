@@ -2,6 +2,7 @@ package co.anbora.wakemeup.domain.repository;
 
 import java.util.List;
 
+import co.anbora.wakemeup.domain.model.AlarmGeofence;
 import co.anbora.wakemeup.domain.model.HistoryAlarm;
 
 public interface HistoryAlarmRepository {
@@ -13,6 +14,14 @@ public interface HistoryAlarmRepository {
         void onDataNotAvailable();
     }
 
+    interface LoadLastPointAlarmsCallback {
+
+        void onHistoryLastPointsLoaded(List<AlarmGeofence> alarms);
+
+        void onDataNotAvailable();
+
+    }
+
     interface GetHistoryAlarmCallback {
 
         void onHistoryAlarmLoaded(HistoryAlarm historyAlarm);
@@ -21,6 +30,8 @@ public interface HistoryAlarmRepository {
     }
 
     void getHistoryAlarms(LoadHistoryAlarmsCallback callback);
+
+    void getHistoryLastPointsAlarms(LoadLastPointAlarmsCallback callback);
 
     void getHistoryAlarm(String alarmId, GetHistoryAlarmCallback callback);
 

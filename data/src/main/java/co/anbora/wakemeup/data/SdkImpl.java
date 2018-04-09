@@ -48,6 +48,11 @@ public class SdkImpl implements Repository {
     }
 
     @Override
+    public void getHistoryLastPointsAlarms(LoadLastPointAlarmsCallback callback) {
+        this.repository.getHistoryLastPointsAlarms(callback);
+    }
+
+    @Override
     public void getHistoryAlarm(String alarmId, GetHistoryAlarmCallback callback) {
         this.repository.getHistoryAlarm(alarmId, callback);
     }

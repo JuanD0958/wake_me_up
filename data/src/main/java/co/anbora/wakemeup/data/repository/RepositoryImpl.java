@@ -54,6 +54,12 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
+    public void getHistoryLastPointsAlarms(LoadLastPointAlarmsCallback callback) {
+
+        this.historyAlarmRepository.getHistoryLastPointsAlarms(callback);
+    }
+
+    @Override
     public void getHistoryAlarm(String alarmId, GetHistoryAlarmCallback callback) {
 
         this.historyAlarmRepository.getHistoryAlarm(alarmId, callback);
