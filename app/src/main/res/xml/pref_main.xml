@@ -21,7 +21,7 @@
         <ListPreference
             android:defaultValue="10"
             android:dialogTitle="@string/pref_alarm_time_dialog_title"
-            android:entries="@array/pref_alarm_time_values"
+            android:entries="@array/pref_alarm_time_entries"
             android:entryValues="@array/pref_alarm_time_values"
             android:key="@string/pref_alarm_time_key"
             android:summary="@string/pref_alarm_time_summary"

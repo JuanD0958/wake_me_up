@@ -170,7 +170,7 @@
     <!-- Preferences categories Alarmas -->
     <string name="pref_title_alarm">Alarmas</string>
 
-    <string name="pref_alarm_time_dialog_title">Tiempo de actulizacion GPS</string>
+    <string name="pref_alarm_time_dialog_title">Tiempo de actualizacion GPS</string>
     <string name="pref_alarm_time_key">time_key_alarm</string>
     <string name="pref_alarm_time_title">Tiempo para localizacion GPS</string>
     <string name="pref_alarm_time_summary">Intervalo de tiempo para actualizar GPS</string>
