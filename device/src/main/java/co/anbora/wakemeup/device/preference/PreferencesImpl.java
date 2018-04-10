@@ -17,10 +17,21 @@ public class PreferencesImpl implements Preferences {
      }
 
     @Override
-    public boolean getValue(String key) {
+    public boolean getBoolean(String key) {
 
         return this.sharedPreferences
                 .getBoolean(key, false);
+    }
+
+    @Override
+    public String getString(String key) {
+        return this.sharedPreferences
+                .getString(key, null);
+    }
+
+    @Override
+    public long getLong(String key) {
+        return this.sharedPreferences.getLong(key, 0);
     }
 
     @Override

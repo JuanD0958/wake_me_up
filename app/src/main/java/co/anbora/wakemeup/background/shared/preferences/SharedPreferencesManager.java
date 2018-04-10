@@ -43,4 +43,40 @@ public interface SharedPreferencesManager {
      */
     void setActiveAlarm(boolean activeAlarm);
 
+    /**
+     * Return true if can show notification when it in the alarm
+     * @return
+     */
+    boolean notifyAlarm();
+
+    /**
+     * Return true when can vibrate when a alarm is active
+     * @return
+     */
+    boolean vibrateAlarm();
+
+    /**
+     * Return the user name information
+     * @return
+     */
+    String nameUser();
+
+    /**
+     * Return the user email information
+     * @return
+     */
+    String emailUser();
+
+    /**
+     * Return meters of the alarms radio
+     * @return
+     */
+    long metersAlarmRadio();
+
+    /**
+     * Return seconds to update gps location
+     * @return
+     */
+    long timeUpdateGps();
+
 }

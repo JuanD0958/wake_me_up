@@ -1,6 +1,9 @@
 package co.anbora.wakemeup.background.shared.preferences;
 
+import android.content.res.Resources;
+
 import co.anbora.wakemeup.Constants;
+import co.anbora.wakemeup.R;
 import co.anbora.wakemeup.device.preference.Preferences;
 
 /**
@@ -10,15 +13,16 @@ import co.anbora.wakemeup.device.preference.Preferences;
 public class SharedPreferencesManagerImpl implements SharedPreferencesManager {
 
     private final Preferences preferences;
+    private final Resources resources;
 
-    public SharedPreferencesManagerImpl(Preferences preferences) {
+    public SharedPreferencesManagerImpl(Preferences preferences, Resources resources) {
         this.preferences = preferences;
+        this.resources = resources;
     }
-
 
     @Override
     public boolean addedGeofence() {
-        return this.preferences.getValue(Constants.GEOFENCES_ADDED_KEY);
+        return this.preferences.getBoolean(Constants.GEOFENCES_ADDED_KEY);
     }
 
     @Override
@@ -28,7 +32,7 @@ public class SharedPreferencesManagerImpl implements SharedPreferencesManager {
 
     @Override
     public boolean requestingLocationUpdates() {
-        return this.preferences.getValue(Constants.KEY_REQUESTING_LOCATION_UPDATES);
+        return this.preferences.getBoolean(Constants.KEY_REQUESTING_LOCATION_UPDATES);
     }
 
     @Override
@@ -38,11 +42,41 @@ public class SharedPreferencesManagerImpl implements SharedPreferencesManager {
 
     @Override
     public boolean activeAlarm() {
-        return this.preferences.getValue(Constants.ACTIVE_ALARM);
+        return this.preferences.getBoolean(Constants.ACTIVE_ALARM);
     }
 
     @Override
     public void setActiveAlarm(boolean activeAlarm) {
         this.preferences.setValue(Constants.ACTIVE_ALARM, activeAlarm);
+    }
+
+    @Override
+    public boolean notifyAlarm() {
+        return this.preferences.getBoolean(this.resources.getString(R.string.pref_notification_key));
+    }
+
+    @Override
+    public boolean vibrateAlarm() {
+        return this.preferences.getBoolean(this.resources.getString(R.string.pref_notification_vibrate_key));
+    }
+
+    @Override
+    public String nameUser() {
+        return this.preferences.getString(this.resources.getString(R.string.pref_general_name_key));
+    }
+
+    @Override
+    public String emailUser() {
+        return this.preferences.getString(this.resources.getString(R.string.pref_general_email_key));
+    }
+
+    @Override
+    public long metersAlarmRadio() {
+        return this.preferences.getLong(this.resources.getString(R.string.pref_alarm_area_key));
+    }
+
+    @Override
+    public long timeUpdateGps() {
+        return this.preferences.getLong(this.resources.getString(R.string.pref_alarm_time_key));
     }
 }

@@ -6,7 +6,11 @@ package co.anbora.wakemeup.device.preference;
 
 public interface Preferences {
 
-    boolean getValue(String key);
+    boolean getBoolean(String key);
+
+    String getString(String key);
+
+    long getLong(String key);
 
     void setValue(String key, boolean value);
 

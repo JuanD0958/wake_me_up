@@ -256,7 +256,7 @@ public class Injection {
 
     public static SharedPreferencesManager provideSharedPreferencesManager(final Context context) {
 
-        return new SharedPreferencesManagerImpl(providePreferences(context));
+        return new SharedPreferencesManagerImpl(providePreferences(context), context.getResources());
     }
 
     public static Mapper<AlarmGeofence, HistoryAlarm> provideHistoryMapper() {
