@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import co.anbora.wakemeup.Constants;
 import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.R;
+import co.anbora.wakemeup.background.shared.preferences.SharedPreferencesManager;
 import co.anbora.wakemeup.domain.model.AlarmAndLastPoint;
 
 public class NotifiedAlarmActivity extends AppCompatActivity
@@ -24,6 +25,7 @@ public class NotifiedAlarmActivity extends AppCompatActivity
     private GoogleMap mMap;
     private NotifiedAlarmContract.Presenter presenter;
     private String alarmId;
+    private SharedPreferencesManager sharedPreferencesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,8 @@ public class NotifiedAlarmActivity extends AppCompatActivity
         }
 
         Injection.provideVibrations(getApplicationContext()).cancel();
+
+        sharedPreferencesManager = Injection.provideSharedPreferencesManager(getApplicationContext());
     }
 
     private void setUpUI() {
@@ -93,7 +97,7 @@ public class NotifiedAlarmActivity extends AppCompatActivity
 
     private LatLng AddAlarmMark(AlarmAndLastPoint alarm) {
         LatLng positionAlarm = new LatLng(alarm.alarm().latitude(), alarm.alarm().longitude());
-        mMap.addCircle(new CircleOptions().radius(Constants.GEOFENCE_RADIUS_IN_METERS)
+        mMap.addCircle(new CircleOptions().radius(sharedPreferencesManager.metersAlarmRadio())
                 .center(positionAlarm));
         return positionAlarm;
     }

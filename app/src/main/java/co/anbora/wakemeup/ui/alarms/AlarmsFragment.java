@@ -56,8 +56,8 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
     private AlarmsContract.Presenter presenter;
 
     public static final int MILLISECONDS = 1000;
-    private final int INTERVAL_TIME = 10 * MILLISECONDS;
-    private final int FAST_INTERVAL = INTERVAL_TIME /2 ;
+    private long intervalTime;
+    private long fastIntervalTime;
     private static final int REQUEST_CHECK_SETTINGS = 10;
 
      private SupportMapFragment mMapFragment;
@@ -104,6 +104,9 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
         mMapFragment.getMapAsync(this);
 
         sharedPreferencesManager = Injection.provideSharedPreferencesManager(getContext());
+
+        intervalTime = sharedPreferencesManager.timeUpdateGps() * MILLISECONDS;
+        fastIntervalTime = intervalTime / 2;
     }
 
     private void configureLocationSettings() {
@@ -186,7 +189,8 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
             LatLng alarmLocation;
             for (AlarmGeofence alarm : alarms){
                 alarmLocation = new LatLng(alarm.latitude(), alarm.longitude());
-                listDrawAlarms.add(this.googleMap.addCircle(new CircleOptions().radius(Constants.GEOFENCE_RADIUS_IN_METERS)
+                listDrawAlarms.add(this.googleMap.addCircle(new CircleOptions()
+                        .radius(sharedPreferencesManager.metersAlarmRadio())
                         .center(alarmLocation)));
             }
         }
@@ -249,7 +253,7 @@ public class AlarmsFragment extends Fragment implements AlarmsContract.View,
 
         locationComponent = Injection.provideLocationComponent(getContext(),
                 locationSettings,
-                INTERVAL_TIME, FAST_INTERVAL, LocationRequest.PRIORITY_HIGH_ACCURACY);
+                intervalTime, fastIntervalTime, LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         CallbackLocation callback = new CallbackLocation() {
             @Override
