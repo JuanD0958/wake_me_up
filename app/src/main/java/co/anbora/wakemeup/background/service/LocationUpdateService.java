@@ -52,8 +52,8 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     private final IBinder mBinder = new LocalBinder();
 
     public static final int MILLISECONDS = 1000;
-    private final int INTERVAL_TIME = 10 * MILLISECONDS;
-    private final int FAST_INTERVAL = INTERVAL_TIME /2 ;
+    private long intervalTime;
+    private long fastIntervalTime;
     private OnLastLocationListener locationComponent;
     private OnLocationRequest locationRequest;
 
@@ -94,9 +94,12 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
             }
         };
 
+        intervalTime = sharedPreferencesManager.timeUpdateGps() * MILLISECONDS;
+        fastIntervalTime = intervalTime / 2;
+
         locationComponent = Injection.provideLocationComponent(getApplicationContext(),
                 null,
-                INTERVAL_TIME, FAST_INTERVAL, LocationRequest.PRIORITY_HIGH_ACCURACY);
+                intervalTime, fastIntervalTime, LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationRequest = locationComponent.onLastLocation(callback)
                 .whenLocationChange()
@@ -133,16 +136,8 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Service started");
         validateStartedNotification(intent);
-        validateActiveAlarm(intent);
         // Tells the system to not try to recreate the service after it has been killed.
         return START_NOT_STICKY;
-    }
-
-    private void validateActiveAlarm(Intent intent) {
-        boolean markAlarmAsActive = intent.getBooleanExtra(Constants.MARK_ALARM_AS_ACTIVE, false);
-        if (!markAlarmAsActive) {
-            //TO-DO write in shared preferences to validate
-        }
     }
 
     private void validateStartedNotification(Intent intent) {
