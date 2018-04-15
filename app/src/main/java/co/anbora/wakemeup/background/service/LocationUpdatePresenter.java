@@ -1,11 +1,13 @@
 package co.anbora.wakemeup.background.service;
 
+import android.content.SharedPreferences;
 import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 
 import co.anbora.wakemeup.Constants;
+import co.anbora.wakemeup.background.shared.preferences.SharedPreferencesManager;
 import co.anbora.wakemeup.data.repository.model.AlarmGeofenceModel;
 import co.anbora.wakemeup.data.repository.model.HistoryAlarmModel;
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
@@ -26,18 +28,21 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
     private GetAlarms getAlarms;
     private CheckAlarmAsActivated checkAlarmAsActivated;
     private UpdateStateAlarm updateStateAlarm;
+    private SharedPreferencesManager sharedPreferences;
 
     public LocationUpdatePresenter(LocationUpdateContract.View view,
                                    UseCaseHandler useCaseHandler,
                                    GetAlarms getAlarms,
                                    CheckAlarmAsActivated checkAlarmAsActivated,
-                                   UpdateStateAlarm updateStateAlarm){
+                                   UpdateStateAlarm updateStateAlarm,
+                                   SharedPreferencesManager sharedPreferences){
 
         this.view = view;
         this.useCaseHandler = useCaseHandler;
         this.getAlarms = getAlarms;
         this.checkAlarmAsActivated = checkAlarmAsActivated;
         this.updateStateAlarm = updateStateAlarm;
+        this.sharedPreferences = sharedPreferences;
 
         this.view.setPresenter(this);
     }
@@ -77,7 +82,7 @@ public class LocationUpdatePresenter implements LocationUpdateContract.Presenter
         for (AlarmGeofence geofence: response.getAlarms()) {
             if (geofence.state()) {
                 latLngIterator = new LatLng(geofence.latitude(), geofence.longitude());
-                if (SphericalUtil.computeDistanceBetween(latLngIterator, latLngCurrent) <= Constants.GEOFENCE_RADIUS_IN_METERS) {
+                if (SphericalUtil.computeDistanceBetween(latLngIterator, latLngCurrent) <= sharedPreferences.metersAlarmRadio()) {
                     return geofence;
                 }
             }
