@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.media.RingtoneManager;
+import android.net.Uri;
 
 import co.anbora.wakemeup.background.DisableAlarmBroadCastReceiver;
 import co.anbora.wakemeup.background.factory.NotificationFactory;
@@ -24,6 +26,8 @@ import co.anbora.wakemeup.device.notification.Notifications;
 import co.anbora.wakemeup.device.notification.NotificationsImpl;
 import co.anbora.wakemeup.device.preference.Preferences;
 import co.anbora.wakemeup.device.preference.PreferencesImpl;
+import co.anbora.wakemeup.device.ringtone.Ringtones;
+import co.anbora.wakemeup.device.ringtone.RingtonesImpl;
 import co.anbora.wakemeup.device.vibration.Vibrations;
 import co.anbora.wakemeup.device.vibration.VibrationsImpl;
 import co.anbora.wakemeup.domain.mapper.Mapper;
@@ -51,6 +55,8 @@ import co.anbora.wakemeup.ui.notifiedalarm.NotifiedAlarmActivity;
  */
 
 public class Injection {
+
+    private static Ringtones ringtone;
 
     private static class SingletonHelper {
         private final static Mapper<AlarmGeofence, HistoryAlarm> MAPPER = new AlarmToHistoryMapper();
@@ -257,6 +263,23 @@ public class Injection {
     public static SharedPreferencesManager provideSharedPreferencesManager(final Context context) {
 
         return new SharedPreferencesManagerImpl(providePreferences(context), context.getResources());
+    }
+
+    public static Ringtones provideRingtonesManager(final Context context) {
+
+        if (ringtone == null) {
+            ringtone = new RingtonesImpl(context, provideUriRingtone());
+        }
+        return ringtone;
+    }
+
+    public static Uri provideUriRingtone(){
+
+        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        if (alarmUri == null) {
+            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        }
+        return alarmUri;
     }
 
     public static Mapper<AlarmGeofence, HistoryAlarm> provideHistoryMapper() {

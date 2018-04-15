@@ -17,6 +17,7 @@ import co.anbora.wakemeup.Constants;
 import co.anbora.wakemeup.Injection;
 import co.anbora.wakemeup.R;
 import co.anbora.wakemeup.background.shared.preferences.SharedPreferencesManager;
+import co.anbora.wakemeup.device.ringtone.Ringtones;
 import co.anbora.wakemeup.domain.model.AlarmAndLastPoint;
 
 public class NotifiedAlarmActivity extends AppCompatActivity
@@ -47,6 +48,7 @@ public class NotifiedAlarmActivity extends AppCompatActivity
         }
 
         Injection.provideVibrations(getApplicationContext()).cancel();
+        Injection.provideRingtonesManager(getApplicationContext()).cancel();
 
         sharedPreferencesManager = Injection.provideSharedPreferencesManager(getApplicationContext());
     }

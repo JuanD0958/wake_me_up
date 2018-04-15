@@ -2,10 +2,8 @@ package co.anbora.wakemeup.background.service;
 
 import android.app.ActivityManager;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Binder;
@@ -29,6 +27,7 @@ import co.anbora.wakemeup.device.location.CallbackLocation;
 import co.anbora.wakemeup.device.location.OnLastLocationListener;
 import co.anbora.wakemeup.device.location.OnLocationRequest;
 import co.anbora.wakemeup.device.notification.Notifications;
+import co.anbora.wakemeup.device.ringtone.Ringtones;
 import co.anbora.wakemeup.device.vibration.Vibrations;
 import co.anbora.wakemeup.domain.model.AlarmGeofence;
 
@@ -60,6 +59,7 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
     private LocationUpdateContract.Presenter presenter;
 
     private Vibrations vibrations;
+    private Ringtones ringtones;
 
 
     private static final long[] EFFECTS = new long[] { 0, 1000, 0, 0, 500, 0, 0, 2000, 0};
@@ -114,7 +114,8 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
                 Injection.provideUseCaseHandler(),
                 Injection.provideGetAlarms(),
                 Injection.provideCheckAlarmActivated(),
-                Injection.provideUpdateStateAlarm());
+                Injection.provideUpdateStateAlarm(),
+                Injection.provideSharedPreferencesManager(getApplicationContext()));
 
         HandlerThread handlerThread = new HandlerThread(TAG);
         handlerThread.start();
@@ -124,6 +125,7 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
         sharedPreferencesManager = Injection.provideSharedPreferencesManager(getApplicationContext());
         vibrations = Injection.provideVibrations(getApplicationContext());
         alarms = Injection.provideAlarmManager(getApplicationContext());
+        ringtones = Injection.provideRingtonesManager(getApplicationContext());
     }
 
     public void requestLocation() {
@@ -269,6 +271,8 @@ public class LocationUpdateService extends Service implements LocationUpdateCont
                             alarmGeofence.id(),
                             getApplicationContext(),
                             getResources()));
+
+            ringtones.play();
         }
 
         if (sharedPreferencesManager.vibrateAlarm()) {
