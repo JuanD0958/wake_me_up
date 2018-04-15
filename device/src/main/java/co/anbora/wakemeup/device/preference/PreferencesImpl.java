@@ -31,7 +31,7 @@ public class PreferencesImpl implements Preferences {
 
     @Override
     public long getLong(String key) {
-        return this.sharedPreferences.getLong(key, 0);
+        return Long.valueOf(this.sharedPreferences.getString(key, "0"));
     }
 
     @Override

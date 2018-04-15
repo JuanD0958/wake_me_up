@@ -19,7 +19,7 @@
     <PreferenceCategory android:title="@string/pref_title_alarm">
 
         <ListPreference
-            android:defaultValue="10"
+            android:defaultValue="@integer/default_time"
             android:dialogTitle="@string/pref_alarm_time_dialog_title"
             android:entries="@array/pref_alarm_time_entries"
             android:entryValues="@array/pref_alarm_time_values"
@@ -28,7 +28,7 @@
             android:title="@string/pref_alarm_time_title" />
 
         <ListPreference
-            android:defaultValue="100"
+            android:defaultValue="@integer/default_meters"
             android:dialogTitle="@string/pref_alarm_area_dialog_title"
             android:entries="@array/pref_alarm_area_entries"
             android:entryValues="@array/pref_alarm_area_values"
